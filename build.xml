@@ -1,0 +1,21 @@
+<!-- $Id: build.xml,v 1.1 2006/12/04 17:52:46 jklett Exp $ -->
+<project name="BlipLib" default="dist" basedir=".">
+
+    <property name="build" value="classes" />
+    <property name="src" value="src" />
+    <property name="jarfile" value="upper.jar" />
+    <property name="etc" value="etc" />
+
+    <target name="compile">
+        <mkdir dir="${build}" />
+        <javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.4" source="1.4" />
+    </target>
+
+    <target name="package" depends="compile">
+        <jar destfile="${jarfile}" basedir="${build}" manifest="${etc}/MainClass" />
+    </target>
+
+    <target name="build" depends="package" />
+    <target name="dist" depends="build" />
+
+</project>

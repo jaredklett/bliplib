@@ -1,21 +1,40 @@
-<!-- $Id: build.xml,v 1.1 2006/12/04 17:52:46 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.2 2006/12/06 00:03:13 jklett Exp $ -->
 <project name="BlipLib" default="dist" basedir=".">
 
     <property name="build" value="classes" />
-    <property name="src" value="src" />
-    <property name="jarfile" value="upper.jar" />
     <property name="etc" value="etc" />
+    <property name="dist" value="dist" />
+    <property name="lib" value="lib" />
+    <property name="src" value="src" />
+    <property name="log4jprops" value="log4j.properties" />
+    <property name="jarfile" value="bliplib.jar" />
+    <property name="zipfile" value="bliplib.zip" />
+
+    <path id="bliplibpath">
+        <pathelement
+                path="${lib}/log4j.jar:${lib}/commons-codec.jar:${lib}/commons-httpclient.jar:${lib}/xercesImpl.jar"/>
+    </path>
 
     <target name="compile">
         <mkdir dir="${build}" />
-        <javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.4" source="1.4" />
+        <javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.4" source="1.4">
+            <classpath refid="bliplibpath"/>
+        </javac>
     </target>
 
     <target name="package" depends="compile">
+        <copy file="${etc}/log4j.properties" todir="${build}" />
         <jar destfile="${jarfile}" basedir="${build}" manifest="${etc}/MainClass" />
     </target>
 
     <target name="build" depends="package" />
-    <target name="dist" depends="build" />
+
+    <target name="dist" depends="build">
+        <mkdir dir="${dist}" />
+        <copy file="${etc}/LICENSE" todir="${dist}" />
+        <copy file="${etc}/README" todir="${dist}" />
+        <copy file="${jarfile}" todir="${dist}" />
+        <zip destfile="${zipfile}" basedir="${dist}" />
+    </target>
 
 </project>

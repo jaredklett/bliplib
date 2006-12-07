@@ -30,60 +30,79 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 
 /**
- * This is a placeholder description of this class.
- * TODO
+ * This class provides a set of static utility methods for manipulating XML to
+ * and from a variety of objects.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.1 2006/12/04 17:52:46 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.2 2006/12/07 22:47:24 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.1 $";
+    public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
-    /** TODO */
+    /** The number of milliseconds we will wait for a web server to respond. */
     public static final int TIMEOUT = 30000;
-    /** TODO */
+    /** Matches the dot-extension on an XML file, i.e. foo.xml */
     public static final String XML_TYPE = "xml";
-    /** TODO */
+    /** A string which specifies the UTF-8 character encoding */
     public static final String UTF8_TYPE = "UTF-8";
-    /** TODO */
+    /** A standard newline: backslash-n */
     public static final String NEWLINE = "\n";
 
 // Class methods //////////////////////////////////////////////////////////////
 
     /**
-     * TODO
-     * @param url
-     * @return
+     * Attempts to load an XML document from the passed URL.
+     *
+     * @param url The URL to load the document from.
+     * @return A Document object, or null if a document could not be retrieved.
      * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
     public static Document loadDocumentFromURL(String url) throws IOException, ParserConfigurationException, SAXException {
         return loadDocumentFromURL(url, null);
     }
 
     /**
-     * TODO
-     * @param url
-     * @param authCookie
-     * @return
+     * Attempts to load an XML document from the passed URL.
+     *
+     * @param url The URL to load the document from.
+     * @param authCookie A cookie to be set in the HTTP request, usually for authentication.
+     * @return A Document object, or null if a document could not be retrieved.
      * @throws IOException
      * @throws ParserConfigurationException
      * @throws SAXException
      */
     public static Document loadDocumentFromURL(String url, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+        return loadDocumentFromURL(url, authCookie, null);
+    }
+
+    /**
+     * Attempts to load an XML document from the passed URL.
+     *
+     * @param url The URL to load the document from.
+     * @param authCookie A cookie to be set in the HTTP request, usually for authentication.
+     * @param userAgent A user-agent string to be set in the HTTP request.
+     * @return A Document object, or null if a document could not be retrieved.
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    public static Document loadDocumentFromURL(String url, Cookie authCookie, String userAgent) throws IOException, ParserConfigurationException, SAXException {
         Document document = null;
         GetMethod method = new GetMethod(url);
         try {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            // TODO FIXME
-            client.getParams().setParameter(HttpMethodParams.USER_AGENT, "TODO FIXME");
+            if (userAgent != null)
+                client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(TIMEOUT);
             if (authCookie != null)
@@ -102,12 +121,12 @@ public class XmlUtils {
         return document;
     }
 
-
     /**
      * Parses an XML string into at DOM Document.
      *
      * @param xml The (presumably XML) string that's to be turned into a DOM document.
      * @return A W3C DOM document that holds the contents of the given XML.
+     * @throws IOException
      */
     public static Document makeDocumentFromString(String xml) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -121,6 +140,7 @@ public class XmlUtils {
      *
      * @param file The (presumably XML) file that's to be turned into a DOM document.
      * @return a W3C DOM document that holds the contents of the given File
+     * @throws IOException
      */
     public static Document makeDocumentFromFile(File file) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -132,6 +152,7 @@ public class XmlUtils {
      *
      * @param doc The W3C DOM document to be serialized.
      * @return A string representation of the DOM document's data in XML.
+     * @throws IOException
      */
     public static String makeStringFromDocument(Document doc) throws IOException {
         StringWriter writer = new StringWriter();
@@ -147,6 +168,7 @@ public class XmlUtils {
      *
      * @param doc The W3C DOM document to be serialized.
      * @return A string representation of the DOM document's data in XML.
+     * @throws IOException
      */
     public static File makeFileFromDocument(Document doc) throws IOException {
         OutputFormat format = new OutputFormat(doc, UTF8_TYPE, true);

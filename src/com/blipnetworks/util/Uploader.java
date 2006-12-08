@@ -15,6 +15,7 @@ package com.blipnetworks.util;
 import java.io.*;
 import java.util.*;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -33,73 +34,19 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.1 2006/12/04 17:52:46 jklett Exp $
+ * @version $Id: Uploader.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.1 $";
+    public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
     /** The name of the cookie that contains the authcode. */
     public static final String AUTH_COOKIE_NAME = "otter_auth";
-
-    /** The hash key to the file parameter. */
-    public static final String FILE_PARAM_KEY = "file";
-    /** The hash key to the file parameter. */
-    public static final String THUMB_PARAM_KEY = "thumbnail";
-    /** The hash key to the title parameter. */
-    public static final String TITLE_PARAM_KEY = "title";
-    /** The hash key to the post ID parameter. */
-    public static final String POST_PARAM_KEY = "post";
-    /** The hash key to the license parameter. */
-    public static final String LICENSE_PARAM_KEY = "license";
-    /** The hash key to the category ID parameter. */
-    public static final String CAT_PARAM_KEY = "categories_id";
-    /** The hash key to the topics parameter. */
-    public static final String TAGS_PARAM_KEY = "topics";
-    /** The hash key to the username parameter. */
-    public static final String USER_PARAM_KEY = "userlogin";
-    /** The hash key to the password parameter. */
-    public static final String PASS_PARAM_KEY = "password";
-    /** The hash key to the password parameter. */
-    public static final String WEAK_PASS_PARAM_KEY = "lowpassword";
-    /** The hash key to the skin parameter. */
-    public static final String SKIN_PARAM_KEY = "skin";
-    /** The hash key to the description parameter. */
-    public static final String DESC_PARAM_KEY = "description";
-    /** The hash key to the form cookie GUID parameter. */
-    public static final String GUID_PARAM_KEY = "form_cookie";
-    /** TODO. */
-    public static final String INGEST_PARAM_KEY = "ingest_method";
-    /** TODO */
-    public static final String CROSSPOST_PARAM_KEY = "crosspost";
-    /** TODO */
-    public static final String IA_PARAM_KEY = "crossupload_archiveorg";
-
-    /** Default: the title of the post, if none is supplied. */
-    public static final String TITLE_PARAM_DEF = "Working title";
-    /** Default: the post ID of the post, if none is supplied. */
-    public static final String POST_PARAM_DEF = "1";
-    /** Default: the license ID of the post, if none is supplied. */
-    public static final String LICENSE_PARAM_DEF = "-1";
-    /** Default: the topics for the post, if none is supplied. */
-    public static final String TAGS_PARAM_DEF = "";
-    /** Default: the category ID of the post, if none is supplied. */
-    public static final String CAT_PARAM_DEF = "-1";
-    /** Default: the user login - this should be supplied. */
-    public static final String USER_PARAM_DEF = "nobody";
-    /** Default: the password - this should be supplied. */
-    public static final String PASS_PARAM_DEF = "nopass";
-    /** Default: the skin for the response, if none is supplied. */
-    public static final String SKIN_PARAM_DEF = "xmlhttprequest";
-    /** Default: the description of the post - this should be supplied. */
-    public static final String DESC_PARAM_DEF = "Working description.";
-    /** Default: TODO. */
-    public static final String INGEST_PARAM_DEF = "upperblip";
 
     public static final int ERROR_UNKNOWN = 10;
     public static final int ERROR_BAD_AUTH = 11;
@@ -126,6 +73,9 @@ public class Uploader {
     }
 
     public Uploader(String url, int timeout) {
+        // check the URL and throw a runtime exception if we fail
+        try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
+        // okay, on with the show...
         this.url = url;
         this.timeout = timeout;
     }
@@ -148,7 +98,7 @@ public class Uploader {
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart;
         try {
-            videoFilePart = new FilePart(FILE_PARAM_KEY, videoFile);
+            videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
         } catch (FileNotFoundException fnfe) {
             log.error("Could not locate file: " + videoFile, fnfe);
             return false;
@@ -157,7 +107,7 @@ public class Uploader {
         FilePart thumbnailFilePart = null;
         if (thumbnailFile != null) {
             try {
-                thumbnailFilePart = new FilePart(THUMB_PARAM_KEY, thumbnailFile);
+                thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFile);
             } catch (FileNotFoundException fnfe) {
                 log.error("Could not locate file: " + thumbnailFile, fnfe);
                 return false;
@@ -170,25 +120,25 @@ public class Uploader {
         list.add(videoFilePart);
         if (thumbnailFilePart != null)
             list.add(thumbnailFilePart);
-        list.add(new StringPart(TITLE_PARAM_KEY, parameters.getProperty(TITLE_PARAM_KEY, TITLE_PARAM_DEF)));
-        list.add(new StringPart(POST_PARAM_KEY, parameters.getProperty(POST_PARAM_KEY, POST_PARAM_DEF)));
-        list.add(new StringPart(CAT_PARAM_KEY, parameters.getProperty(CAT_PARAM_KEY, CAT_PARAM_DEF)));
-        list.add(new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)));
-        list.add(new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)));
-        list.add(new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)));
-        list.add(new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)));
-        list.add(new StringPart(INGEST_PARAM_KEY, parameters.getProperty(INGEST_PARAM_KEY, INGEST_PARAM_DEF)));
+        list.add(new StringPart(Parameters.TITLE_PARAM_KEY, parameters.getProperty(Parameters.TITLE_PARAM_KEY, Parameters.TITLE_PARAM_DEF)));
+        list.add(new StringPart(Parameters.POST_PARAM_KEY, parameters.getProperty(Parameters.POST_PARAM_KEY, Parameters.POST_PARAM_DEF)));
+        list.add(new StringPart(Parameters.CAT_PARAM_KEY, parameters.getProperty(Parameters.CAT_PARAM_KEY, Parameters.CAT_PARAM_DEF)));
+        list.add(new StringPart(Parameters.TAGS_PARAM_KEY, parameters.getProperty(Parameters.TAGS_PARAM_KEY, Parameters.TAGS_PARAM_DEF)));
+        list.add(new StringPart(Parameters.LICENSE_PARAM_KEY, parameters.getProperty(Parameters.LICENSE_PARAM_KEY, Parameters.LICENSE_PARAM_DEF)));
+        list.add(new StringPart(Parameters.SKIN_PARAM_KEY, parameters.getProperty(Parameters.SKIN_PARAM_KEY, Parameters.SKIN_PARAM_DEF)));
+        list.add(new StringPart(Parameters.DESC_PARAM_KEY, parameters.getProperty(Parameters.DESC_PARAM_KEY, Parameters.DESC_PARAM_DEF)));
+        list.add(new StringPart(Parameters.INGEST_PARAM_KEY, parameters.getProperty(Parameters.INGEST_PARAM_KEY, Parameters.INGEST_PARAM_DEF)));
         if (crossposts != null) {
             for (int i = 0; i < crossposts.size(); i++)
-                list.add(new StringPart(CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
+                list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
         }
-        String ia = parameters.getProperty(IA_PARAM_KEY);
+        String ia = parameters.getProperty(Parameters.IA_PARAM_KEY);
         if (ia != null)
-            list.add(new StringPart(IA_PARAM_KEY, ia));
+            list.add(new StringPart(Parameters.IA_PARAM_KEY, ia));
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
-            list.add(new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)));
-            list.add(new StringPart(PASS_PARAM_KEY, parameters.getProperty(PASS_PARAM_KEY, PASS_PARAM_DEF)));
+            list.add(new StringPart(Parameters.USER_PARAM_KEY, parameters.getProperty(Parameters.USER_PARAM_KEY, Parameters.USER_PARAM_DEF)));
+            list.add(new StringPart(Parameters.PASS_PARAM_KEY, parameters.getProperty(Parameters.PASS_PARAM_KEY, Parameters.PASS_PARAM_DEF)));
         }
         parts = (Part[])list.toArray(typeArray);
 
@@ -311,11 +261,11 @@ public class Uploader {
         }
         File f = new File(args[1]);
         Properties p = new Properties();
-        p.put(Uploader.USER_PARAM_KEY, args[2]);
-        p.put(Uploader.PASS_PARAM_KEY, args[3]);
+        p.put(Parameters.USER_PARAM_KEY, args[2]);
+        p.put(Parameters.PASS_PARAM_KEY, args[3]);
         if (args.length > 4) {
-            p.put(Uploader.TITLE_PARAM_KEY, args[4]);
-            p.put(Uploader.DESC_PARAM_KEY, args[5]);
+            p.put(Parameters.TITLE_PARAM_KEY, args[4]);
+            p.put(Parameters.DESC_PARAM_KEY, args[5]);
         }
 
         Uploader uploader = new Uploader(args[0]);

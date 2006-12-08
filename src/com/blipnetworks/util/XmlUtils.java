@@ -28,20 +28,22 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * This class provides a set of static utility methods for manipulating XML to
  * and from a variety of objects.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.2 2006/12/07 22:47:24 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.3 2006/12/08 21:21:11 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -95,6 +97,9 @@ public class XmlUtils {
      * @throws SAXException
      */
     public static Document loadDocumentFromURL(String url, Cookie authCookie, String userAgent) throws IOException, ParserConfigurationException, SAXException {
+        // check the URL and throw a runtime exception if we fail
+        try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
+        // okay, on with the show...
         Document document = null;
         GetMethod method = new GetMethod(url);
         try {

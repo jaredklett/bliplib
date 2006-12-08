@@ -13,27 +13,28 @@
 package com.blipnetworks.util;
 
 import java.io.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import org.apache.log4j.Logger;
+import org.apache.commons.httpclient.Cookie;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class knows how to ask Otter about the status of an upload, and nothing more.
  * It's immutable and should stay that way.
- * TODO
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.1 2006/12/04 17:52:46 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.1 $";
+    public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -43,11 +44,6 @@ public class UploadStatus {
     private static final String UPDATE_TAG = "update";
     private static final String READ_TAG = "read";
     private static final String TOTAL_TAG = "total";
-
-// Class variables ////////////////////////////////////////////////////////////
-
-    /** Our logging facility. */
-    private static Logger log = Logger.getLogger(UploadStatus.class);
 
 // Instance variables /////////////////////////////////////////////////////////
 
@@ -68,26 +64,27 @@ public class UploadStatus {
 
     /**
      * Hits the URL and attempts to read XML back from the response.
+     *
      * @param url The URL to hit to load status information.
      * @param guid The GUID for the upload.
      * @return A new object containing the status data.
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public static UploadStatus getStatus(String url, String guid) {
-
-        UploadStatus status = null;
-        Document document = null;
-        try {
-            document = XmlUtils.loadDocumentFromURL(url + guid, Authenticator.authCookie);
-        } catch (IOException e) {
-            log.error("Got a general I/O error!", e);
-        } catch (ParserConfigurationException e) {
-            log.error("Could not configure XML parser!", e);
-        } catch (SAXException e) {
-            log.error("Got a general parsing error!", e);
-        }
+    public static UploadStatus getStatus(String url, String guid, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+        // check the URL and throw a runtime exception if we fail
+        try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
+        // check the cookie
+        if (authCookie == null)
+            throw new IllegalArgumentException("Cookie cannot be null");
+        // okay, on with the show...
+        UploadStatus status = new UploadStatus();
+        Document document = XmlUtils.loadDocumentFromURL(url + guid, authCookie);
         if (document != null) {
             try {
-                status = new UploadStatus();
+                // we make many assumptions here.
+                // so we do all this inside a try-catch block
                 status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getFirstChild().getNodeValue());
                 status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getFirstChild().getNodeValue());
                 status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getFirstChild().getNodeValue()));
@@ -95,8 +92,9 @@ public class UploadStatus {
                 status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getFirstChild().getNodeValue()));
                 status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getFirstChild().getNodeValue()));
             } catch (Exception e) {
-                log.error("Got a general exception while parsing XML document!", e);
-                return null;
+                // we catch any exception to guard against NPE and AIOOB.
+                System.out.println("Got a general exception while parsing XML document!");
+                e.printStackTrace();
             }
         }
         return status;

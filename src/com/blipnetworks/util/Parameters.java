@@ -36,14 +36,12 @@ public class Parameters {
     public static final String DESC_PARAM_KEY = "description";
     /** The hash key to the form cookie GUID parameter. */
     public static final String GUID_PARAM_KEY = "form_cookie";
-    /** TODO. */
+    /** The hash key to the ingest method parameter. */
     public static final String INGEST_PARAM_KEY = "ingest_method";
-    /** TODO */
+    /** The hash key to the cross-post parameter. */
     public static final String CROSSPOST_PARAM_KEY = "crosspost";
-    /** TODO */
+    /** The hash key to the IA cross-upload parameter. */
     public static final String IA_PARAM_KEY = "crossupload_archiveorg";
-
-
 
     /** Default: the title of the post, if none is supplied. */
     public static final String TITLE_PARAM_DEF = "Working title";
@@ -63,8 +61,7 @@ public class Parameters {
     public static final String SKIN_PARAM_DEF = "xmlhttprequest";
     /** Default: the description of the post - this should be supplied. */
     public static final String DESC_PARAM_DEF = "Working description.";
-    /** Default: TODO. */
-    public static final String INGEST_PARAM_DEF = "upperblip";
+    /** Default: the ingest method - this should be supplied. */
+    public static final String INGEST_PARAM_DEF = "bliplib";
 
-
-}
+} // class Parameters

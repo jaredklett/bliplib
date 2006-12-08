@@ -36,14 +36,14 @@ import java.net.MalformedURLException;
  * and from a variety of objects.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.3 2006/12/08 21:21:11 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.4 2006/12/08 23:16:48 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -55,6 +55,12 @@ public class XmlUtils {
     public static final String UTF8_TYPE = "UTF-8";
     /** A standard newline: backslash-n */
     public static final String NEWLINE = "\n";
+
+// Constructor ////////////////////////////////////////////////////////////////
+
+    private XmlUtils() {
+        // should never be called outside
+    }
 
 // Class methods //////////////////////////////////////////////////////////////
 
@@ -113,17 +119,20 @@ public class XmlUtils {
             if (authCookie != null)
                 client.getState().addCookie(authCookie);
             int responseCode = client.executeMethod(method);
-            if (responseCode == HttpStatus.SC_OK) {
-                // Read the response
-                InputStream responseStream = method.getResponseBodyAsStream();
-                DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                document = docBuilder.parse(responseStream);
-            }
+            if (responseCode == HttpStatus.SC_OK)
+                document = loadDocumentFromInputStream(method.getResponseBodyAsStream());
+            else
+                throw new RuntimeException("Got bad response code from web server: " + responseCode);
         }
         finally {
             method.releaseConnection();
         }
         return document;
+    }
+
+    public static Document loadDocumentFromInputStream(InputStream stream) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        return docBuilder.parse(stream);
     }
 
     /**

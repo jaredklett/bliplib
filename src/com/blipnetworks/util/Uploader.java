@@ -22,26 +22,23 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.cookie.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.*;
-import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
+ * @version $Id: Uploader.java,v 1.3 2006/12/08 23:16:48 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -51,11 +48,7 @@ public class Uploader {
     public static final int ERROR_UNKNOWN = 10;
     public static final int ERROR_BAD_AUTH = 11;
     public static final int ERROR_SERVER = 12;
-
-// Class variables ////////////////////////////////////////////////////////////
-
-    /** Our logging facility. */
-    private static Logger log = Logger.getLogger(Uploader.class);
+    protected static final int TIMEOUT = 30000;
 
 // Instance variables /////////////////////////////////////////////////////////
 
@@ -69,83 +62,49 @@ public class Uploader {
 // Constructor ////////////////////////////////////////////////////////////////
 
     public Uploader(String url) {
-        this(url, 30000);
+        this(url, TIMEOUT);
     }
 
     public Uploader(String url, int timeout) {
+        this(url, timeout, null);
+    }
+
+    public Uploader(String url, Cookie authCookie) {
+        this(url, TIMEOUT, authCookie);
+    }
+
+    public Uploader(String url, int timeout, Cookie authCookie) {
         // check the URL and throw a runtime exception if we fail
         try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
         // okay, on with the show...
         this.url = url;
         this.timeout = timeout;
+        this.authCookie = authCookie;
     }
 
 // Instance methods ///////////////////////////////////////////////////////////
 
-    public boolean uploadFile(File file, Properties parameters) {
+    public boolean uploadFile(File file, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         return uploadFile(file, null, parameters);
     }
 
     /**
      *
      */
-    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) {
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         return uploadFile(videoFile, thumbnailFile, parameters, null);
     }
 
-    // TODO: break this beast up
-    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) {
+    // TODO: break this beast up a little more
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         PostMethod post = new PostMethod(urlWithGuid);
-        FilePart videoFilePart;
-        try {
-            videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
-        } catch (FileNotFoundException fnfe) {
-            log.error("Could not locate file: " + videoFile, fnfe);
-            return false;
-        }
-
+        FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
         FilePart thumbnailFilePart = null;
-        if (thumbnailFile != null) {
-            try {
-                thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFile);
-            } catch (FileNotFoundException fnfe) {
-                log.error("Could not locate file: " + thumbnailFile, fnfe);
-                return false;
-            }
-        }
-
-        Part[] parts;
-        Part[] typeArray = new Part[0];
-        List list = new ArrayList();
-        list.add(videoFilePart);
-        if (thumbnailFilePart != null)
-            list.add(thumbnailFilePart);
-        list.add(new StringPart(Parameters.TITLE_PARAM_KEY, parameters.getProperty(Parameters.TITLE_PARAM_KEY, Parameters.TITLE_PARAM_DEF)));
-        list.add(new StringPart(Parameters.POST_PARAM_KEY, parameters.getProperty(Parameters.POST_PARAM_KEY, Parameters.POST_PARAM_DEF)));
-        list.add(new StringPart(Parameters.CAT_PARAM_KEY, parameters.getProperty(Parameters.CAT_PARAM_KEY, Parameters.CAT_PARAM_DEF)));
-        list.add(new StringPart(Parameters.TAGS_PARAM_KEY, parameters.getProperty(Parameters.TAGS_PARAM_KEY, Parameters.TAGS_PARAM_DEF)));
-        list.add(new StringPart(Parameters.LICENSE_PARAM_KEY, parameters.getProperty(Parameters.LICENSE_PARAM_KEY, Parameters.LICENSE_PARAM_DEF)));
-        list.add(new StringPart(Parameters.SKIN_PARAM_KEY, parameters.getProperty(Parameters.SKIN_PARAM_KEY, Parameters.SKIN_PARAM_DEF)));
-        list.add(new StringPart(Parameters.DESC_PARAM_KEY, parameters.getProperty(Parameters.DESC_PARAM_KEY, Parameters.DESC_PARAM_DEF)));
-        list.add(new StringPart(Parameters.INGEST_PARAM_KEY, parameters.getProperty(Parameters.INGEST_PARAM_KEY, Parameters.INGEST_PARAM_DEF)));
-        if (crossposts != null) {
-            for (int i = 0; i < crossposts.size(); i++)
-                list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
-        }
-        String ia = parameters.getProperty(Parameters.IA_PARAM_KEY);
-        if (ia != null)
-            list.add(new StringPart(Parameters.IA_PARAM_KEY, ia));
-        // We want to omit the un/pw parts if we have an auth cookie
-        if (authCookie == null) {
-            list.add(new StringPart(Parameters.USER_PARAM_KEY, parameters.getProperty(Parameters.USER_PARAM_KEY, Parameters.USER_PARAM_DEF)));
-            list.add(new StringPart(Parameters.PASS_PARAM_KEY, parameters.getProperty(Parameters.PASS_PARAM_KEY, Parameters.PASS_PARAM_DEF)));
-        }
-        parts = (Part[])list.toArray(typeArray);
-
+        if (thumbnailFile != null)
+            thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFile);
+        Part[] parts = setRequestParts(videoFilePart, thumbnailFilePart, parameters, crossposts);
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-
         boolean succeeded = false;
-
         try {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
@@ -170,40 +129,36 @@ public class Uploader {
                     }
                 }
             }
-
             // Check the HTTP response code
             succeeded = responseCode < 400;
             // Read the response
             InputStream responseStream = post.getResponseBodyAsStream();
-            DocumentBuilder docBuilder;
-            Document document = null;
-            try {
-                docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                document = docBuilder.parse(responseStream);
-            } catch (ParserConfigurationException e) {
-                log.error("Could not configure XML parser!", e);
-            } catch (SAXException e) {
-                log.error("Got a general parsing error!", e);
-            }
-
-            // agree on a proper schema for responses from Blip.
+            Document document = XmlUtils.loadDocumentFromInputStream(responseStream);
+            // TODO: agree on a proper schema for responses from Blip.
             if (responseCode == HttpStatus.SC_OK) {
                 if (document != null) {
-                    // attempt to discern the status from the respose
-                    String responseText = document.getElementsByTagName("response").item(0).getFirstChild().getNodeValue();
-                    String[] lines = responseText.trim().split("\n");
-                    if (lines.length >= 2) {
-                        try {
+                    // avoid NPE below
+                    String responseText = "";
+                    try {
+                        // attempt to discern the status from the respose
+                        responseText = document.getElementsByTagName("response").item(0).getFirstChild().getNodeValue();
+                        String[] lines = responseText.trim().split("\n");
+                        if (lines.length >= 2) {
                             URL testURL = new URL(lines[1]);
                             postURL = testURL.toString();
-                        } catch (Exception e) {
-                            log.error("Couldn't find valid URL in response text:\n" + responseText, e);
                         }
+                    }
+                    catch (Exception e) {
+                        // we want to catch anything since we're making some assumptions above
+                        // regarding indices and whatnot
+                        System.out.println("Couldn't find valid URL in response text:\n" + responseText);
+                        e.printStackTrace();
                     }
                     if (responseText.indexOf("couldn't find an account") != -1)
                         errorCode = ERROR_BAD_AUTH;
                     return responseText.indexOf("has been successfully posted") != -1;
 /*
+Other possible response strings:
                     "username and password combination";
                     "You must";
                     "critical error";
@@ -214,17 +169,42 @@ public class Uploader {
                 errorCode = ERROR_SERVER;
             }
         }
-        catch (HttpException e) {
-            log.error("Got an error while making HTTP request!", e);
-        }
-        catch (IOException e) {
-            log.error("Got a general I/O error!", e);
-        }
         finally {
             post.releaseConnection();
         }
         return succeeded;
     } // method uploadFile
+
+    private Part[] setRequestParts(FilePart videoFilePart, FilePart thumbnailFilePart, Properties parameters, List crossposts) {
+        Part[] typeArray = new Part[0];
+        List list = new ArrayList();
+        list.add(videoFilePart);
+        if (thumbnailFilePart != null)
+            list.add(thumbnailFilePart);
+        list.add(Parameters.getStringPart(parameters, Parameters.TITLE_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.POST_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.CAT_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.TAGS_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.LICENSE_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.SKIN_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.DESC_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.INGEST_PARAM_KEY));
+        if (crossposts != null) {
+            for (int i = 0; i < crossposts.size(); i++)
+                list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
+        }
+        String ia = parameters.getProperty(Parameters.IA_PARAM_KEY);
+        if (ia != null)
+            list.add(new StringPart(Parameters.IA_PARAM_KEY, ia));
+        // We want to omit the un/pw parts if we have an auth cookie
+        if (authCookie == null) {
+            // if the caller hasn't populated their parameters with a un/pw
+            // an exception will be thrown from within the Parameters class
+            list.add(Parameters.getStringPart(parameters, Parameters.USER_PARAM_KEY));
+            list.add(Parameters.getStringPart(parameters, Parameters.PASS_PARAM_KEY));
+        }
+        return (Part[])list.toArray(typeArray);
+    }
 
 // Accessors //////////////////////////////////////////////////////////////////
 
@@ -240,12 +220,20 @@ public class Uploader {
 
 // Mutators ///////////////////////////////////////////////////////////////////
 
-    /** TODO */
+    /**
+     * Validates the passed GUID/UUID, and sets it to be used upon success.
+     * @param guid The GUID/UUID to be used when uploading.
+     */
     public void setGuid(String guid) {
-        urlWithGuid = url + guid;
+        // let the UUID class validate it
+        UUID uuid = UUID.fromString(guid);
+        urlWithGuid = url + uuid.toString();
     }
 
-    /** TODO */
+    /**
+     * Sets the authentication cookie to be used when uploading.
+     * @param authCookie The cookie received from the <code>Authenticator</code> class.
+     */
     public void setAuthCookie(Cookie authCookie) {
         this.authCookie = authCookie;
     }
@@ -259,17 +247,23 @@ public class Uploader {
             System.out.println("Optional parameters: <title> <desc>");
             return;
         }
-        File f = new File(args[1]);
-        Properties p = new Properties();
-        p.put(Parameters.USER_PARAM_KEY, args[2]);
-        p.put(Parameters.PASS_PARAM_KEY, args[3]);
-        if (args.length > 4) {
-            p.put(Parameters.TITLE_PARAM_KEY, args[4]);
-            p.put(Parameters.DESC_PARAM_KEY, args[5]);
-        }
+        try {
+            File file = new File(args[1]);
+            Properties props = new Properties();
+            props.put(Parameters.USER_PARAM_KEY, args[2]);
+            props.put(Parameters.PASS_PARAM_KEY, args[3]);
+            if (args.length > 4) {
+                props.put(Parameters.TITLE_PARAM_KEY, args[4]);
+                props.put(Parameters.DESC_PARAM_KEY, args[5]);
+            }
 
-        Uploader uploader = new Uploader(args[0]);
-        uploader.uploadFile(f, p);
+            Cookie cookie = Authenticator.authenticate(args[4], args[5]);
+            Uploader uploader = new Uploader(args[0], cookie);
+            uploader.uploadFile(file, props);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 } // class Uploader

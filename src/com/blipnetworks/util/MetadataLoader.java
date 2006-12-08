@@ -40,15 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.3 2006/12/08 23:16:48 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.2 2006/12/08 21:21:11 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

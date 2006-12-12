@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.3 2006/12/08 23:16:48 jklett Exp $
+ * @version $Id: Uploader.java,v 1.4 2006/12/12 00:58:31 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -56,6 +56,7 @@ public class Uploader {
     private String url;
     private String urlWithGuid;
     private String postURL;
+    private String userAgent;
     private int timeout;
     private int errorCode;
 
@@ -80,22 +81,59 @@ public class Uploader {
         this.url = url;
         this.timeout = timeout;
         this.authCookie = authCookie;
+        // TODO FIXME
+        this.userAgent = "BlipLib blah blah";
     }
 
 // Instance methods ///////////////////////////////////////////////////////////
 
-    public boolean uploadFile(File file, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
-        return uploadFile(file, null, parameters);
+    /**
+     * Uploads the passed file with the passed parameters as the form data.
+     *
+     * @param videoFile The video file to be uploaded.
+     * @param parameters A collection of key-value paired form data.
+     * @return True on confirmation of a successful upload, false otherwise.
+     * @throws FileNotFoundException If the passed file doesn't exist.
+     * @throws HttpException If an error occurs while talking to the server.
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
+     */
+    public boolean uploadFile(File videoFile, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+        return uploadFile(videoFile, null, parameters);
     }
 
     /**
+     * Uploads the passed file with the passed parameters as the form data.
      *
+     * @param videoFile The video file to be uploaded.
+     * @param thumbnailFile The image file to be used as a thumbnail.
+     * @param parameters A collection of key-value paired form data.
+     * @return True on confirmation of a successful upload, false otherwise.
+     * @throws FileNotFoundException If the passed file doesn't exist.
+     * @throws HttpException If an error occurs while talking to the server.
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         return uploadFile(videoFile, thumbnailFile, parameters, null);
     }
 
-    // TODO: break this beast up a little more
+    /**
+     * Uploads the passed file with the passed parameters as the form data.
+     *
+     * @param videoFile The video file to be uploaded.
+     * @param thumbnailFile The image file to be used as a thumbnail.
+     * @param parameters A collection of key-value paired form data.
+     * @param crossposts A list of cross-post destinations.
+     * @return True on confirmation of a successful upload, false otherwise.
+     * @throws FileNotFoundException If the passed file doesn't exist.
+     * @throws HttpException If an error occurs while talking to the server.
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
+     */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
@@ -109,8 +147,7 @@ public class Uploader {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            // TODO FIXME
-            client.getParams().setParameter(HttpMethodParams.USER_AGENT, "TODO FIXME");
+            client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
             // If we had an auth cookie previously, set it in the client before
@@ -134,7 +171,6 @@ public class Uploader {
             // Read the response
             InputStream responseStream = post.getResponseBodyAsStream();
             Document document = XmlUtils.loadDocumentFromInputStream(responseStream);
-            // TODO: agree on a proper schema for responses from Blip.
             if (responseCode == HttpStatus.SC_OK) {
                 if (document != null) {
                     // avoid NPE below
@@ -208,14 +244,30 @@ Other possible response strings:
 
 // Accessors //////////////////////////////////////////////////////////////////
 
-    /** TODO */
+    /**
+     * Upon upload failure, an error code will be recorded.
+     * @return The error code.
+     */
     public int getErrorCode() {
         return errorCode;
     }
 
-    /** TODO */
+    /**
+     * Upon upload success, the XML response will be parsed for the URL to the
+     * post on Blip.tv
+     * @return The post URL.
+     */
     public String getPostURL() {
         return postURL;
+    }
+
+    /**
+     * Retrieves the currently set user-agent string that will be sent in the
+     * HTTP request.
+     * @return The user-agent string.
+     */
+    public String getUserAgent() {
+        return userAgent;
     }
 
 // Mutators ///////////////////////////////////////////////////////////////////
@@ -236,6 +288,14 @@ Other possible response strings:
      */
     public void setAuthCookie(Cookie authCookie) {
         this.authCookie = authCookie;
+    }
+
+    /**
+     * Sets the user-agent string that will be sent in the HTTP request.
+     * @param userAgent The new user-agent string to be used.
+     */
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
 // Main method ////////////////////////////////////////////////////////////////

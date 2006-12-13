@@ -23,14 +23,14 @@ import java.util.HashMap;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.3 2006/12/08 23:16:48 jklett Exp $
+ * @version $Id: Parameters.java,v 1.4 2006/12/13 18:30:24 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -97,18 +97,20 @@ public class Parameters {
         defaultMap.put(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF);
         defaultMap.put(TAGS_PARAM_KEY, TAGS_PARAM_DEF);
         defaultMap.put(CAT_PARAM_KEY, CAT_PARAM_DEF);
-//        defaultMap.put(USER_PARAM_KEY, USER_PARAM_DEF);
-//        defaultMap.put(PASS_PARAM_KEY, PASS_PARAM_DEF);
         defaultMap.put(SKIN_PARAM_KEY, SKIN_PARAM_DEF);
         defaultMap.put(DESC_PARAM_KEY, DESC_PARAM_DEF);
         defaultMap.put(INGEST_PARAM_KEY, INGEST_PARAM_DEF);
     }
 
     /**
-     * Returns an object suitable for use
-     * @param parameters
-     * @param key
+     * Returns an object suitable for use in an HTTP request. Uses a mapping
+     * of keys to default values to ensure a valid return value, unless there
+     * is no default mapping available.
+     *
+     * @param parameters A collection of key-value paired form data.
+     * @param key The key to use to get at the value.
      * @return A <code>StringPart</code> object.
+     * @throws IllegalArgumentException If there is no default mapping available for the passed key.
      */
     public static StringPart getStringPart(Properties parameters, String key) {
         String defaultValue;

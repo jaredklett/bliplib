@@ -31,23 +31,26 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.4 2006/12/12 00:58:31 jklett Exp $
+ * @version $Id: Uploader.java,v 1.5 2006/12/13 20:20:04 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
     /** The name of the cookie that contains the authcode. */
     public static final String AUTH_COOKIE_NAME = "otter_auth";
+    public static final String BLIPLIB_PROPERTIES = "bliplib.properties";
 
+    /** TODO */
     public static final int ERROR_UNKNOWN = 10;
     public static final int ERROR_BAD_AUTH = 11;
     public static final int ERROR_SERVER = 12;
+    /** Default timeout for an HTTP request: 30 seconds. */
     protected static final int TIMEOUT = 30000;
 
 // Instance variables /////////////////////////////////////////////////////////
@@ -59,30 +62,81 @@ public class Uploader {
     private String userAgent;
     private int timeout;
     private int errorCode;
+    /** TODO */
+    protected static final String BASE_URL = "base.url";
+    protected static final String UPLOAD_URI = "upload.uri";
+    protected static final String DEF_BASE_URL = "http://blip.tv";
+    protected static final String DEF_UPLOAD_URI = "/file/post";
 
 // Constructor ////////////////////////////////////////////////////////////////
 
-    public Uploader(String url) {
-        this(url, TIMEOUT);
+    /**
+     * Creates an uploader instance with the default timeout, a URL loaded from
+     * the configuration file (bliplib.properties) and no auth cookie (be sure
+     * to pass a username and password in your parameters object when
+     * you call <code>uploadFile()</code>).
+     *
+     * @throws IOException If the configuration file cannot be loaded.
+     */
+    public Uploader() throws IOException {
+        this(TIMEOUT);
     }
 
-    public Uploader(String url, int timeout) {
-        this(url, timeout, null);
+    /**
+     * Creates an uploader instance with the passed timeout, a URL loaded from
+     * the configuration file (bliplib.properties) and no auth cookie (be sure
+     * to pass a username and password in your parameters object when
+     * you call <code>uploadFile()</code>).
+     *
+     * @param timeout A value, in milliseconds, after which the HTTP request should time out.
+     * @throws IOException If the configuration file cannot be loaded.
+     */
+    public Uploader(int timeout) throws IOException {
+        this(null, timeout, null);
     }
 
-    public Uploader(String url, Cookie authCookie) {
-        this(url, TIMEOUT, authCookie);
+    /**
+     * Creates an uploader instance with the the default timeout, a URL loaded from
+     * the configuration file (bliplib.properties) and the passed <code>Cookie</code>
+     * as the authentication cookie.
+     *
+     * @param authCookie The authentication cookie that will be set in the HTTP request.
+     * @throws IOException If the configuration file cannot be loaded.
+     */
+    public Uploader(Cookie authCookie) throws IOException {
+        this(null, TIMEOUT, authCookie);
     }
 
-    public Uploader(String url, int timeout, Cookie authCookie) {
+    /**
+     * Creates an uploader instance with the the passed timeout, passed URL,
+     * and the passed <code>Cookie</code> as the authentication cookie.
+     *
+     * @param url The URL that will be posted to.
+     * @param timeout A value, in milliseconds, after which the HTTP request should time out.
+     * @param authCookie The authentication cookie that will be set in the HTTP request.
+     * @throws IOException If the configuration file cannot be loaded.
+     */
+    public Uploader(String url, int timeout, Cookie authCookie) throws IOException {
+        String fullURL;
+        if (url == null) {
+            Properties properties = new Properties();
+            properties.load(ClassLoader.getSystemResourceAsStream(BLIPLIB_PROPERTIES));
+            String baseURL = properties.getProperty(BASE_URL, DEF_BASE_URL);
+            String uploadURI = properties.getProperty(UPLOAD_URI, DEF_UPLOAD_URI);
+            fullURL = baseURL + uploadURI;
+        } else {
+            fullURL = url;
+        }
         // check the URL and throw a runtime exception if we fail
-        try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
+        try {
+            new URL(fullURL);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("URL is invalid: " + fullURL);
+        }
         // okay, on with the show...
-        this.url = url;
+        this.url = fullURL;
         this.timeout = timeout;
         this.authCookie = authCookie;
-        // TODO FIXME
-        this.userAgent = "BlipLib blah blah";
     }
 
 // Instance methods ///////////////////////////////////////////////////////////
@@ -147,7 +201,8 @@ public class Uploader {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent);
+            if (userAgent != null)
+                client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
             // If we had an auth cookie previously, set it in the client before
@@ -318,7 +373,7 @@ Other possible response strings:
             }
 
             Cookie cookie = Authenticator.authenticate(args[4], args[5]);
-            Uploader uploader = new Uploader(args[0], cookie);
+            Uploader uploader = new Uploader(cookie);
             uploader.uploadFile(file, props);
         }
         catch (Exception e) {

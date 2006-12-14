@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.3 2006/12/14 17:29:50 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -65,16 +65,23 @@ public class UploadStatus {
     /**
      * Hits the URL and attempts to read XML back from the response.
      *
-     * @param url The URL to hit to load status information.
      * @param guid The GUID for the upload.
+     * @param authCookie The authentication cookie to be used in the request.
      * @return A new object containing the status data.
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws SAXException
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public static UploadStatus getStatus(String url, String guid, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+    public static UploadStatus getStatus(String guid, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+        String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
+        String statusURI = Parameters.config.getProperty(Parameters.STATUS_URI, Parameters.STATUS_URI_DEF);
+        String url = baseURL + statusURI + guid;
         // check the URL and throw a runtime exception if we fail
-        try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
+        try {
+            new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("URL must be valid: " + e.getMessage());
+        }
         // check the cookie
         if (authCookie == null)
             throw new IllegalArgumentException("Cookie cannot be null");
@@ -82,20 +89,13 @@ public class UploadStatus {
         UploadStatus status = new UploadStatus();
         Document document = XmlUtils.loadDocumentFromURL(url + guid, authCookie);
         if (document != null) {
-            try {
-                // we make many assumptions here.
-                // so we do all this inside a try-catch block
-                status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getFirstChild().getNodeValue());
-                status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getFirstChild().getNodeValue());
-                status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getFirstChild().getNodeValue()));
-                status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getFirstChild().getNodeValue()));
-                status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getFirstChild().getNodeValue()));
-                status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getFirstChild().getNodeValue()));
-            } catch (Exception e) {
-                // we catch any exception to guard against NPE and AIOOB.
-                System.out.println("Got a general exception while parsing XML document!");
-                e.printStackTrace();
-            }
+            // we make many assumptions here.
+            status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getFirstChild().getNodeValue());
+            status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getFirstChild().getNodeValue());
+            status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getFirstChild().getNodeValue()));
+            status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getFirstChild().getNodeValue()));
+            status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getFirstChild().getNodeValue()));
+            status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getFirstChild().getNodeValue()));
         }
         return status;
     }

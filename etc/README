@@ -1,11 +1,26 @@
 BlipLib - a Java library for interacting with Blip.tv
 =====================================================
 
-Using the library
+* Using the library
 
     Take a look at the BlipLibSample.java file. It should illustrate,
 generally, how to use the classes in this library in tandem to perform an
 upload with feedback that can be shown to the user.
 
+* Dependencies
+
+    This library relies on the Apache Jakarta HTTPClient package, which an be
+found here:
+
+http://jakarta.apache.org/commons/httpclient/
+
+    This package, in turn, relies on Apache Jakarta codec and logging packages.
+All the necessary dependencies are included as .jar files in the lib directory.
+Be sure to add these to your classpath.
+
+    The version of the HTTPClient package that is included is 3.0.1. Feel free
+to use a later version if you wish, but understand that the BlipLib package may
+not have been tested with that version of the package.
+
 =====================================================
-$Revision: 1.2 $
+$Revision: 1.3 $

@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.3 2006/12/08 23:16:48 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.4 2006/12/14 18:01:48 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -88,13 +88,15 @@ public class MetadataLoader {
      * Loads the metadata from the server and populates the publicly-accessible
      * maps.
      * Requires a valid cookie for authentication.
-     * @param url The URL to load the metadata from as XML.
      * @param authCookie The authentication cookie.
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws SAXException
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public synchronized static void load(String url, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+    public synchronized static void load(Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+        String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
+        String metaURI = Parameters.config.getProperty(Parameters.META_URI, Parameters.META_URI_DEF);
+        String url = baseURL + metaURI;
         // URL will be checked by XMLUtils, so just check the cookie
         if (authCookie == null)
             throw new IllegalArgumentException("Cookie cannot be null");

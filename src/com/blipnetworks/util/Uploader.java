@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.5 2006/12/13 20:20:04 jklett Exp $
+ * @version $Id: Uploader.java,v 1.6 2006/12/14 00:19:34 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -120,7 +120,7 @@ public class Uploader {
         String fullURL;
         if (url == null) {
             Properties properties = new Properties();
-            properties.load(ClassLoader.getSystemResourceAsStream(BLIPLIB_PROPERTIES));
+            properties.load(Uploader.class.getClassLoader().getResourceAsStream(BLIPLIB_PROPERTIES));
             String baseURL = properties.getProperty(BASE_URL, DEF_BASE_URL);
             String uploadURI = properties.getProperty(UPLOAD_URI, DEF_UPLOAD_URI);
             fullURL = baseURL + uploadURI;
@@ -189,6 +189,8 @@ public class Uploader {
      * @throws SAXException If an error occurs while parsing the XML response.
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+        if (urlWithGuid == null)
+            throw new IllegalStateException("No GUID has been set");
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
         FilePart thumbnailFilePart = null;
@@ -355,25 +357,28 @@ Other possible response strings:
 
 // Main method ////////////////////////////////////////////////////////////////
 
-    /** TODO */
+    /**
+     * Main method will run a bare-bones upload using the passed arguments.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
-        if (args.length < 4) {
-            System.out.println("Usage: java Uploader <url> <file> <user> <pass>");
+        if (args.length < 3) {
+            System.out.println("Usage: java Uploader <file> <user> <pass>");
             System.out.println("Optional parameters: <title> <desc>");
             return;
         }
         try {
-            File file = new File(args[1]);
+            File file = new File(args[0]);
             Properties props = new Properties();
-            props.put(Parameters.USER_PARAM_KEY, args[2]);
-            props.put(Parameters.PASS_PARAM_KEY, args[3]);
             if (args.length > 4) {
-                props.put(Parameters.TITLE_PARAM_KEY, args[4]);
-                props.put(Parameters.DESC_PARAM_KEY, args[5]);
+                props.put(Parameters.TITLE_PARAM_KEY, args[3]);
+                props.put(Parameters.DESC_PARAM_KEY, args[4]);
             }
 
-            Cookie cookie = Authenticator.authenticate(args[4], args[5]);
+            Cookie cookie = Authenticator.authenticate(args[1], args[2]);
             Uploader uploader = new Uploader(cookie);
+            uploader.setGuid(UUID.randomUUID().toString());
             uploader.uploadFile(file, props);
         }
         catch (Exception e) {

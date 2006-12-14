@@ -24,14 +24,14 @@ import java.io.IOException;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.5 2006/12/14 01:14:04 jklett Exp $
+ * @version $Id: Parameters.java,v 1.6 2006/12/14 18:02:01 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -96,9 +96,13 @@ public class Parameters {
     public static final String BASE_URL = "base.url";
     public static final String UPLOAD_URI = "upload.uri";
     public static final String BASE_URL_DEF = "http://blip.tv";
-    public static final String UPLOAD_URI_DEF = "/file/post";
+    public static final String UPLOAD_URI_DEF = "/file/post?form_cookie=";
     public static final String AUTH_URI = "auth.uri";
     public static final String AUTH_URI_DEF = "/posts";
+    public static final String STATUS_URI = "status.uri";
+    public static final String STATUS_URI_DEF = "/upload/status?skin=xmlhttprequest&form_cookie=";
+    public static final String META_URI = "metadata.uri";
+    public static final String META_URI_DEF = "/file/post?skin=xmlhttprequest";
 
     /** The name of the configuration file. */
     public static final String BLIPLIB_PROPERTIES = "bliplib.properties";

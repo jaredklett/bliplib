@@ -22,22 +22,22 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import java.io.IOException;
 
 /**
- * TODO
+ * This class provides a method of submitting a username and password to
+ * Blip.tv and get an authentication cookie back in the response.
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.3 2006/12/14 01:14:04 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.4 2006/12/14 17:21:59 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
-    /** TODO */
-    public static final String PROPERTY_LOGIN_URI = "login.uri";
+    private static final String EMPTY_STRING = "";
 
 // Constructors ///////////////////////////////////////////////////////////////
 
@@ -52,17 +52,19 @@ public class Authenticator {
      * password. If the request is granted, an authentication cookie will be
      * issued.
      *
-     * @param username TODO
-     * @param password
-     * @return A 
-     * @throws HttpException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws IllegalStateException
+     * @param username The username to be used.
+     * @param password The password to be used.
+     * @return A cookie that can be used to authenticate the user.
+     * @throws HttpException If an error occurs while talking to the server.
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws IllegalArgumentException If bad username/password is passed in.
+     * @throws IllegalStateException If we get a bad response from the server.
      */
     public static Cookie authenticate(String username, String password) throws HttpException, IOException {
         if (username == null || password == null)
             throw new IllegalArgumentException("Neither username nor password can be null");
+        if (username.trim().equals(EMPTY_STRING) || password.trim().equals(EMPTY_STRING))
+            throw new IllegalArgumentException("Neither username nor password can be empty");
         Cookie authCookie = null;
         String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
         String authURI = Parameters.config.getProperty(Parameters.AUTH_URI, Parameters.AUTH_URI_DEF);

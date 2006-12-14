@@ -17,20 +17,21 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.IOException;
 
 /**
  * Just a class to hold static strings that are used in multiple classes
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.4 2006/12/13 18:30:24 jklett Exp $
+ * @version $Id: Parameters.java,v 1.5 2006/12/14 01:14:04 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -90,6 +91,20 @@ public class Parameters {
 
     private static Map defaultMap;
 
+
+    /** TODO */
+    public static final String BASE_URL = "base.url";
+    public static final String UPLOAD_URI = "upload.uri";
+    public static final String BASE_URL_DEF = "http://blip.tv";
+    public static final String UPLOAD_URI_DEF = "/file/post";
+    public static final String AUTH_URI = "auth.uri";
+    public static final String AUTH_URI_DEF = "/posts";
+
+    /** The name of the configuration file. */
+    public static final String BLIPLIB_PROPERTIES = "bliplib.properties";
+    /** Where the configuration is stored. */
+    public static Properties config;
+
     static {
         defaultMap = new HashMap();
         defaultMap.put(TITLE_PARAM_KEY, TITLE_PARAM_DEF);
@@ -100,6 +115,18 @@ public class Parameters {
         defaultMap.put(SKIN_PARAM_KEY, SKIN_PARAM_DEF);
         defaultMap.put(DESC_PARAM_KEY, DESC_PARAM_DEF);
         defaultMap.put(INGEST_PARAM_KEY, INGEST_PARAM_DEF);
+    }
+
+    /**
+     * Loads a configuration file from bliplib.properties as a resource from
+     * the classloader that loaded this class, as a <code>Properties</code> object.
+     *
+     * @see config
+     * @throws IOException If the config file can't be loaded.
+     */
+    public static void loadConfig() throws IOException {
+        config = new Properties();
+        config.load(Parameters.class.getClassLoader().getResourceAsStream(BLIPLIB_PROPERTIES));
     }
 
     /**

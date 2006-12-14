@@ -31,20 +31,19 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.6 2006/12/14 00:19:34 jklett Exp $
+ * @version $Id: Uploader.java,v 1.7 2006/12/14 01:14:04 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
     /** The name of the cookie that contains the authcode. */
     public static final String AUTH_COOKIE_NAME = "otter_auth";
-    public static final String BLIPLIB_PROPERTIES = "bliplib.properties";
 
     /** TODO */
     public static final int ERROR_UNKNOWN = 10;
@@ -62,11 +61,6 @@ public class Uploader {
     private String userAgent;
     private int timeout;
     private int errorCode;
-    /** TODO */
-    protected static final String BASE_URL = "base.url";
-    protected static final String UPLOAD_URI = "upload.uri";
-    protected static final String DEF_BASE_URL = "http://blip.tv";
-    protected static final String DEF_UPLOAD_URI = "/file/post";
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -75,10 +69,8 @@ public class Uploader {
      * the configuration file (bliplib.properties) and no auth cookie (be sure
      * to pass a username and password in your parameters object when
      * you call <code>uploadFile()</code>).
-     *
-     * @throws IOException If the configuration file cannot be loaded.
      */
-    public Uploader() throws IOException {
+    public Uploader() {
         this(TIMEOUT);
     }
 
@@ -89,9 +81,8 @@ public class Uploader {
      * you call <code>uploadFile()</code>).
      *
      * @param timeout A value, in milliseconds, after which the HTTP request should time out.
-     * @throws IOException If the configuration file cannot be loaded.
      */
-    public Uploader(int timeout) throws IOException {
+    public Uploader(int timeout) {
         this(null, timeout, null);
     }
 
@@ -101,9 +92,8 @@ public class Uploader {
      * as the authentication cookie.
      *
      * @param authCookie The authentication cookie that will be set in the HTTP request.
-     * @throws IOException If the configuration file cannot be loaded.
      */
-    public Uploader(Cookie authCookie) throws IOException {
+    public Uploader(Cookie authCookie) {
         this(null, TIMEOUT, authCookie);
     }
 
@@ -114,15 +104,12 @@ public class Uploader {
      * @param url The URL that will be posted to.
      * @param timeout A value, in milliseconds, after which the HTTP request should time out.
      * @param authCookie The authentication cookie that will be set in the HTTP request.
-     * @throws IOException If the configuration file cannot be loaded.
      */
-    public Uploader(String url, int timeout, Cookie authCookie) throws IOException {
+    public Uploader(String url, int timeout, Cookie authCookie) {
         String fullURL;
         if (url == null) {
-            Properties properties = new Properties();
-            properties.load(Uploader.class.getClassLoader().getResourceAsStream(BLIPLIB_PROPERTIES));
-            String baseURL = properties.getProperty(BASE_URL, DEF_BASE_URL);
-            String uploadURI = properties.getProperty(UPLOAD_URI, DEF_UPLOAD_URI);
+            String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
+            String uploadURI = Parameters.config.getProperty(Parameters.UPLOAD_URI, Parameters.UPLOAD_URI_DEF);
             fullURL = baseURL + uploadURI;
         } else {
             fullURL = url;
@@ -378,7 +365,8 @@ Other possible response strings:
 
             Cookie cookie = Authenticator.authenticate(args[1], args[2]);
             Uploader uploader = new Uploader(cookie);
-            uploader.setGuid(UUID.randomUUID().toString());
+            String guid = new RandomGUID().toString();
+            uploader.setGuid(guid);
             uploader.uploadFile(file, props);
         }
         catch (Exception e) {

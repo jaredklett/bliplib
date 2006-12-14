@@ -25,14 +25,14 @@ import java.io.IOException;
  * TODO
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.2 2006/12/08 21:21:11 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.3 2006/12/14 01:14:04 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ public class Authenticator {
      * password. If the request is granted, an authentication cookie will be
      * issued.
      *
-     * @param username
+     * @param username TODO
      * @param password
      * @return A 
      * @throws HttpException
@@ -64,10 +64,9 @@ public class Authenticator {
         if (username == null || password == null)
             throw new IllegalArgumentException("Neither username nor password can be null");
         Cookie authCookie = null;
-        // TODO FIXME
-        String url = "";
-        String uri = "";
-        PostMethod post = new PostMethod(url + uri);
+        String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
+        String authURI = Parameters.config.getProperty(Parameters.AUTH_URI, Parameters.AUTH_URI_DEF);
+        PostMethod post = new PostMethod(baseURL + authURI);
         NameValuePair[] nvp = {
                 new NameValuePair(Parameters.USER_PARAM_KEY, username),
                 new NameValuePair(Parameters.PASS_PARAM_KEY, password),
@@ -95,7 +94,6 @@ public class Authenticator {
             // Check the HTTP response code
             boolean succeeded = responseCode < 400;
             if (!(succeeded && authCookie != null)) {
-                // TODO: error message here
                 throw new IllegalStateException("Received bad response from the server, HTTP response code " + responseCode);
             }
         }

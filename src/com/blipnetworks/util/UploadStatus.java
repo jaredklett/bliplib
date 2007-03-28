@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.4 2007/03/28 21:17:37 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.5 2007/03/28 21:24:57 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -47,6 +47,7 @@ public class UploadStatus {
 
 // Instance variables /////////////////////////////////////////////////////////
 
+    private Document document;
     private String guid;
     private String filename;
     private long start;
@@ -89,6 +90,7 @@ public class UploadStatus {
         UploadStatus status = new UploadStatus();
         Document document = XmlUtils.loadDocumentFromURL(url + guid, authCookie);
         if (document != null) {
+            status.setDocument(document);
             status.setGuid(findTag(document, GUID_TAG));
             status.setFilename(findTag(document, FILENAME_TAG));
             status.setStart(Integer.parseInt(findTag(document, START_TAG)));
@@ -206,6 +208,22 @@ public class UploadStatus {
      */
     private void setTotal(int total) {
         this.total = total;
+    }
+
+    /**
+     * Retrieves the full XML document that was last read.
+     * @return The XML document.
+     */
+    public Document getDocument() {
+        return document;
+    }
+
+    /**
+     * Sets the full XML document that was last read in this object.
+     * @param document The XML document.
+     */
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
 } // class UploadStatus

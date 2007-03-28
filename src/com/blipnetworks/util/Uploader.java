@@ -1,7 +1,7 @@
 /*
  * @(#)Uploader.java
  *
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2006-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.7 2006/12/14 01:14:04 jklett Exp $
+ * @version $Id: Uploader.java,v 1.8 2007/03/28 21:27:50 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

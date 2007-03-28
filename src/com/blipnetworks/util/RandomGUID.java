@@ -28,10 +28,10 @@ import java.security.*;
  * <a href="http://www.javaexchange.com/aboutRandomGUID.html">Java Exchange</a>
  * I added it to the Blip utility package and made some minor corrections.
  * Otherwise this class is unchanged from the original.
+ * It is included for compatibility with Java 1.4, which does not include
+ * <code>java.util.UUID</code>.
  *
- * <b>NOTE: this version of the class is for JDK 1.4.</b>
- *
- * @version $Id: RandomGUID.java,v 1.1 2006/12/14 01:14:04 jklett Exp $
+ * @version $Id: RandomGUID.java,v 1.2 2007/03/28 21:27:50 jklett Exp $
  */
 
 public class RandomGUID {

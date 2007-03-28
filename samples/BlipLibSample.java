@@ -1,7 +1,7 @@
 /*
  * @(#)BlipLibSample.java
  *
- * Copyright (c) 1996-2006 by Blip Networks, Inc.
+ * Copyright (c) 2006-2007 by Blip Networks, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * A simple class that demonstrates how to use BlipLib.
  *
  * @author Jared Klett
- * @version $Id: BlipLibSample.java,v 1.1 2006/12/14 18:01:32 jklett Exp $
+ * @version $Id: BlipLibSample.java,v 1.2 2007/03/28 21:27:50 jklett Exp $
  */
 
 public class BlipLibSample {

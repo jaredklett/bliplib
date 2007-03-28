@@ -1,7 +1,7 @@
 /*
  * @(#)Authenticator.java
  *
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2006-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -26,14 +26,14 @@ import java.io.IOException;
  * Blip.tv and get an authentication cookie back in the response.
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.4 2006/12/14 17:21:59 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.5 2007/03/28 21:27:50 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

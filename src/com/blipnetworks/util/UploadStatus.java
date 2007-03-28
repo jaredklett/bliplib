@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.3 2006/12/14 17:29:50 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.4 2007/03/28 21:17:37 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -89,15 +89,25 @@ public class UploadStatus {
         UploadStatus status = new UploadStatus();
         Document document = XmlUtils.loadDocumentFromURL(url + guid, authCookie);
         if (document != null) {
-            // we make many assumptions here.
-            status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getFirstChild().getNodeValue());
-            status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getFirstChild().getNodeValue());
-            status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getFirstChild().getNodeValue()));
-            status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getFirstChild().getNodeValue()));
-            status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getFirstChild().getNodeValue()));
-            status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getFirstChild().getNodeValue()));
+            status.setGuid(findTag(document, GUID_TAG));
+            status.setFilename(findTag(document, FILENAME_TAG));
+            status.setStart(Integer.parseInt(findTag(document, START_TAG)));
+            status.setUpdate(Integer.parseInt(findTag(document, UPDATE_TAG)));
+            status.setRead(Integer.parseInt(findTag(document, READ_TAG)));
+            status.setTotal(Integer.parseInt(findTag(document, TOTAL_TAG)));
         }
         return status;
+    }
+
+    private static String findTag(Document document, String tag) {
+        NodeList nodelist = document.getElementsByTagName(tag);
+        Node node = nodelist.item(0);
+        if (node == null)
+            throw new RuntimeException("Could not locate parent node for tag: " + tag);
+        Node child = node.getFirstChild();
+        if (child == null)
+            throw new RuntimeException("Found node, but could not locate child node for tag: " + tag);
+        return child.getNodeValue();
     }
 
 // Instance methods ///////////////////////////////////////////////////////////

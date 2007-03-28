@@ -18,20 +18,21 @@ import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Just a class to hold static strings that are used in multiple classes
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.6 2006/12/14 18:02:01 jklett Exp $
+ * @version $Id: Parameters.java,v 1.7 2007/03/28 21:24:27 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -123,14 +124,29 @@ public class Parameters {
 
     /**
      * Loads a configuration file from bliplib.properties as a resource from
-     * the classloader that loaded this class, as a <code>Properties</code> object.
+     * the classloader that loaded this class, as a
+     * <code>java.util.Properties</code> object.
      *
      * @see config
      * @throws IOException If the config file can't be loaded.
      */
-    public static void loadConfig() throws IOException {
-        config = new Properties();
-        config.load(Parameters.class.getClassLoader().getResourceAsStream(BLIPLIB_PROPERTIES));
+    public static synchronized void loadConfig() throws IOException {
+        loadConfig(Parameters.class.getClassLoader().getResourceAsStream(BLIPLIB_PROPERTIES));
+    }
+
+    /**
+     * Loads a configuration file from the passed input stream as a
+     * <code>java.util.Properties</code> object.
+     *
+     * @param in
+     * @see config
+     * @throws IOException
+     */
+    public static synchronized void loadConfig(InputStream in) throws IOException {
+        if (config == null) {
+            config = new Properties();
+            config.load(in);
+        }
     }
 
     /**

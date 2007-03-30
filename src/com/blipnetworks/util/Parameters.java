@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.8 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: Parameters.java,v 1.9 2007/03/30 22:44:31 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -90,10 +90,7 @@ public class Parameters {
     /** Default: the ingest method - this should be supplied. */
     public static final String INGEST_PARAM_DEF = "bliplib";
 
-    private static Map defaultMap;
-
-
-    /** TODO */
+    /** TODO: complete javadoc */
     public static final String BASE_URL = "base.url";
     public static final String UPLOAD_URI = "upload.uri";
     public static final String BASE_URL_DEF = "http://blip.tv";
@@ -109,6 +106,8 @@ public class Parameters {
     public static final String BLIPLIB_PROPERTIES = "bliplib.properties";
     /** Where the configuration is stored. */
     public static Properties config;
+    /** The map of default parameters. */
+    protected static Map defaultMap;
 
     static {
         defaultMap = new HashMap();
@@ -138,9 +137,9 @@ public class Parameters {
      * Loads a configuration file from the passed input stream as a
      * <code>java.util.Properties</code> object.
      *
-     * @param in
+     * @param in The stream to load from.
      * @see config
-     * @throws IOException
+     * @throws IOException If the config file can't be loaded.
      */
     public static synchronized void loadConfig(InputStream in) throws IOException {
         if (config == null) {

@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.4 2006/12/14 18:22:28 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.5 2007/03/30 23:25:13 jklett Exp $ -->
 <project name="BlipLib" default="dist" basedir=".">
 
     <property name="build" value="classes" />
@@ -12,7 +12,7 @@
     <property name="samples" value="samples" />
 
     <path id="bliplibpath">
-        <pathelement path="${lib}/log4j.jar:${lib}/commons-codec.jar:${lib}/commons-httpclient.jar:${lib}/xercesImpl.jar"/>
+        <pathelement path="${lib}/commons-codec.jar:${lib}/commons-httpclient.jar:${lib}/xercesImpl.jar"/>
     </path>
 
     <target name="compile">
@@ -39,6 +39,9 @@
         </copy>
         <copy todir="${dist}/${lib}">
             <fileset dir="${lib}" />
+        </copy>
+        <copy todir="${dist}/${src}">
+            <fileset dir="${src}" />
         </copy>
         <zip destfile="${zipfile}" basedir="${dist}" />
     </target>

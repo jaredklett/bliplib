@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.6 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.7 2007/04/04 21:19:05 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -59,6 +59,10 @@ public class UploadStatus {
 
     private UploadStatus() {
         // will never be called outside
+        // set default objects
+        // TODO: break out
+        setGuid("undefined");
+        setFilename("unknown");
     }
 
 // Class methods //////////////////////////////////////////////////////////////

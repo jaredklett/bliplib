@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.9 2007/04/04 21:38:20 jklett Exp $
+ * @version $Id: Uploader.java,v 1.10 2007/04/04 21:43:13 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -176,9 +176,26 @@ public class Uploader {
      * @throws SAXException If an error occurs while parsing the XML response.
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
-        return uploadFile(new FilePartSource(videoFile), new FilePartSource(thumbnailFile), parameters, crossposts);
+        FilePartSource thumbnailFilePartSource = null;
+        if (thumbnailFile != null)
+            thumbnailFilePartSource = new FilePartSource(thumbnailFile);
+        return uploadFile(new FilePartSource(videoFile), thumbnailFilePartSource, parameters, crossposts);
     }
 
+    /**
+     * Uploads the passed file with the passed parameters as the form data.
+     *
+     * @param videoFilePartSource The video file to be uploaded wrapped in a PartSource object.
+     * @param thumbnailFilePartSource The image file to be used as a thumbnail wrapped in a PartSource object.
+     * @param parameters A collection of key-value paired form data.
+     * @param crossposts A list of cross-post destinations.
+     * @return True on confirmation of a successful upload, false otherwise.
+     * @throws FileNotFoundException If the passed file doesn't exist.
+     * @throws HttpException If an error occurs while talking to the server.
+     * @throws IOException If an error occurs while talking to the server.
+     * @throws ParserConfigurationException If we can't create an XML parser.
+     * @throws SAXException If an error occurs while parsing the XML response.
+     */
     public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         if (urlWithGuid == null)
             throw new IllegalStateException("No GUID has been set");

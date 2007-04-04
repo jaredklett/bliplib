@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.8 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: Uploader.java,v 1.9 2007/04/04 21:38:20 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -176,13 +176,17 @@ public class Uploader {
      * @throws SAXException If an error occurs while parsing the XML response.
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+        return uploadFile(new FilePartSource(videoFile), new FilePartSource(thumbnailFile), parameters, crossposts);
+    }
+
+    public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         if (urlWithGuid == null)
             throw new IllegalStateException("No GUID has been set");
         PostMethod post = new PostMethod(urlWithGuid);
-        FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFile);
+        FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFilePartSource);
         FilePart thumbnailFilePart = null;
-        if (thumbnailFile != null)
-            thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFile);
+        if (thumbnailFilePartSource != null)
+            thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFilePartSource);
         Part[] parts = setRequestParts(videoFilePart, thumbnailFilePart, parameters, crossposts);
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
         boolean succeeded = false;

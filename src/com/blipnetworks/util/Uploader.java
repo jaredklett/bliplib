@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.11 2007/04/05 14:45:35 jklett Exp $
+ * @version $Id: Uploader.java,v 1.12 2007/04/05 23:06:12 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -290,6 +290,9 @@ Other possible response strings:
         list.add(Parameters.getStringPart(parameters, Parameters.SKIN_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.DESC_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.INGEST_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.EXPLICIT_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.LANGUAGE_PARAM_KEY));
+        list.add(Parameters.getStringPart(parameters, Parameters.RATING_PARAM_KEY));
         if (crossposts != null) {
             for (int i = 0; i < crossposts.size(); i++)
                 list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));

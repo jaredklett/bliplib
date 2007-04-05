@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.9 2007/03/30 22:44:31 jklett Exp $
+ * @version $Id: Parameters.java,v 1.10 2007/04/05 23:06:12 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -68,6 +68,12 @@ public class Parameters {
     public static final String CROSSPOST_PARAM_KEY = "crosspost";
     /** The hash key to the IA cross-upload parameter. */
     public static final String IA_PARAM_KEY = "crossupload_archiveorg";
+    /** The hash key to the explicit flag parameter. */
+    public static final String RATING_PARAM_KEY = "content_rating";
+    /** The hash key to the explicit flag parameter. */
+    public static final String LANGUAGE_PARAM_KEY = "language_code";
+    /** The hash key to the explicit flag parameter. */
+    public static final String EXPLICIT_PARAM_KEY = "nsfw";
 
     /** Default: the title of the post, if none is supplied. */
     public static final String TITLE_PARAM_DEF = "Working title";
@@ -89,6 +95,12 @@ public class Parameters {
     public static final String DESC_PARAM_DEF = "";
     /** Default: the ingest method - this should be supplied. */
     public static final String INGEST_PARAM_DEF = "bliplib";
+    /** Default: the value for the explicit flag. */
+    public static final String RATING_PARAM_DEF = "-1";
+    /** Default: the value for the explicit flag. */
+    public static final String LANGUAGE_PARAM_DEF = "en";
+    /** Default: the value for the explicit flag. */
+    public static final String EXPLICIT_PARAM_DEF = "0";
 
     /** TODO: complete javadoc */
     public static final String BASE_URL = "base.url";
@@ -119,6 +131,9 @@ public class Parameters {
         defaultMap.put(SKIN_PARAM_KEY, SKIN_PARAM_DEF);
         defaultMap.put(DESC_PARAM_KEY, DESC_PARAM_DEF);
         defaultMap.put(INGEST_PARAM_KEY, INGEST_PARAM_DEF);
+        defaultMap.put(RATING_PARAM_KEY, RATING_PARAM_DEF);
+        defaultMap.put(LANGUAGE_PARAM_KEY, LANGUAGE_PARAM_DEF);
+        defaultMap.put(EXPLICIT_PARAM_KEY, EXPLICIT_PARAM_DEF);
     }
 
     /**

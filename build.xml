@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.5 2007/03/30 23:25:13 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.6 2007/04/05 23:09:09 jklett Exp $ -->
 <project name="BlipLib" default="dist" basedir=".">
 
     <property name="build" value="classes" />
@@ -46,11 +46,18 @@
         <zip destfile="${zipfile}" basedir="${dist}" />
     </target>
 
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+        <delete file="${jarfile}"/>
+        <delete file="${zipfile}"/>
+    </target>
+
     <target name="docs">
         <javadoc destdir="dist/docs" author="true" version="true" use="true" windowtitle="BlipLib API">
             <packageset dir="src" defaultexcludes="yes" />
             <doctitle><![CDATA[<h1>BlipLib</h1>]]></doctitle>
-            <bottom><![CDATA[<i>Copyright &#169; 2006 Blip Networks, Inc. All Rights Reserved.</i>]]></bottom>
+            <bottom><![CDATA[<i>Copyright &#169; 2006-2007 Blip Networks, Inc. All Rights Reserved.</i>]]></bottom>
         </javadoc>
     </target>
 </project>

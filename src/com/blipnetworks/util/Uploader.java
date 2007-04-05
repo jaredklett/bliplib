@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.10 2007/04/04 21:43:13 jklett Exp $
+ * @version $Id: Uploader.java,v 1.11 2007/04/05 14:45:35 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -342,9 +342,7 @@ Other possible response strings:
      * @param guid The GUID/UUID to be used when uploading.
      */
     public void setGuid(String guid) {
-        // let the UUID class validate it
-        UUID uuid = UUID.fromString(guid);
-        urlWithGuid = url + uuid.toString();
+        urlWithGuid = url + guid;
     }
 
     /**

@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.10 2007/04/05 23:06:12 jklett Exp $
+ * @version $Id: Parameters.java,v 1.11 2007/05/15 15:26:18 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -102,16 +102,25 @@ public class Parameters {
     /** Default: the value for the explicit flag. */
     public static final String EXPLICIT_PARAM_DEF = "0";
 
-    /** TODO: complete javadoc */
+    /** Config key to the base URL of the web site we'll be accessing. */
     public static final String BASE_URL = "base.url";
-    public static final String UPLOAD_URI = "upload.uri";
+    /** Default: config value for base URL */
     public static final String BASE_URL_DEF = "http://blip.tv";
+    /** Config key to the upload URI */
+    public static final String UPLOAD_URI = "upload.uri";
+    /** Default: config value for the upload URI */
     public static final String UPLOAD_URI_DEF = "/file/post?form_cookie=";
+    /** Config key to the authentication URI */
     public static final String AUTH_URI = "auth.uri";
+    /** Default: config value for the authentication URI */
     public static final String AUTH_URI_DEF = "/posts";
+    /** Config key to the upload status URI */
     public static final String STATUS_URI = "status.uri";
+    /** Default: config value for the upload status URI */
     public static final String STATUS_URI_DEF = "/upload/status?skin=xmlhttprequest&form_cookie=";
+    /** Config key to the metadata access URI */
     public static final String META_URI = "metadata.uri";
+    /** Default: config value for the metadata access URI */
     public static final String META_URI_DEF = "/file/post?skin=xmlhttprequest";
 
     /** The name of the configuration file. */

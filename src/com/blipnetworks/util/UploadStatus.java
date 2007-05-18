@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.7 2007/04/04 21:19:05 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.8 2007/05/18 19:34:16 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ public class UploadStatus {
             throw new IllegalArgumentException("Cookie cannot be null");
         // okay, on with the show...
         UploadStatus status = new UploadStatus();
-        Document document = XmlUtils.loadDocumentFromURL(url + guid, authCookie);
+        Document document = XmlUtils.loadDocumentFromURL(url, authCookie);
         if (document != null) {
             status.setDocument(document);
             status.setGuid(findTag(document, GUID_TAG));

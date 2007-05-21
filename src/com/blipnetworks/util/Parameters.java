@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.11 2007/05/15 15:26:18 jklett Exp $
+ * @version $Id: Parameters.java,v 1.12 2007/05/21 17:51:11 jklett Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -107,9 +107,9 @@ public class Parameters {
     /** Default: config value for base URL */
     public static final String BASE_URL_DEF = "http://blip.tv";
     /** Config key to the upload URI */
-    public static final String UPLOAD_URI = "upload.uri";
+    public static final String UPLOAD_URL = "upload.url";
     /** Default: config value for the upload URI */
-    public static final String UPLOAD_URI_DEF = "/file/post?form_cookie=";
+    public static final String UPLOAD_URL_DEF = "http://uploads.blip.tv/file/post?form_cookie=";
     /** Config key to the authentication URI */
     public static final String AUTH_URI = "auth.uri";
     /** Default: config value for the authentication URI */

@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.14 2007/05/18 19:35:09 jklett Exp $
+ * @version $Id: Uploader.java,v 1.15 2007/05/21 17:51:11 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.14 $";
+    public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -108,9 +108,7 @@ public class Uploader {
     public Uploader(String url, int timeout, Cookie authCookie) {
         String fullURL;
         if (url == null) {
-            String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
-            String uploadURI = Parameters.config.getProperty(Parameters.UPLOAD_URI, Parameters.UPLOAD_URI_DEF);
-            fullURL = baseURL + uploadURI;
+            fullURL = Parameters.config.getProperty(Parameters.UPLOAD_URL, Parameters.UPLOAD_URL_DEF);
         } else {
             fullURL = url;
         }

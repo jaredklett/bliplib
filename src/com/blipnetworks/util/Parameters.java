@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.12 2007/05/21 17:51:11 jklett Exp $
+ * @version $Id: Parameters.java,v 1.13 2009/01/22 16:42:21 dsk Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -128,10 +128,10 @@ public class Parameters {
     /** Where the configuration is stored. */
     public static Properties config;
     /** The map of default parameters. */
-    protected static Map defaultMap;
+    protected static Map<String, String> defaultMap;
 
     static {
-        defaultMap = new HashMap();
+        defaultMap = new HashMap<String, String>();
         defaultMap.put(TITLE_PARAM_KEY, TITLE_PARAM_DEF);
         defaultMap.put(POST_PARAM_KEY, POST_PARAM_DEF);
         defaultMap.put(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF);

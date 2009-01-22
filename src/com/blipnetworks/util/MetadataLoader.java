@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.5 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.6 2009/01/22 16:42:21 dsk Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -64,17 +64,17 @@ public class MetadataLoader {
 // Class variables ////////////////////////////////////////////////////////////
 
     /** A map of content license names to numerical IDs. */
-    public static Map licenses;
+    public static Map<String, String> licenses;
     /** A map of category names to numerical IDs. */
-    public static Map categories;
+    public static Map<String, String> categories;
     /** A map of cross-post-able blog names to numerical IDs. */
-    public static Map blogs;
+    public static Map<String, String> blogs;
     /** A map of spoken language names to numerical IDs. */
-    public static Map languages;
+    public static Map<String, String> languages;
     /** A map of content rating names to numerical IDs. */
-    public static Map ratings;
+    public static Map<String, String> ratings;
     /** A map of cross-upload destination names to numerical IDs. */
-    public static Map crossuploads;
+    public static Map<String, String> crossuploads;
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -100,14 +100,14 @@ public class MetadataLoader {
         // URL will be checked by XMLUtils, so just check the cookie
         if (authCookie == null)
             throw new IllegalArgumentException("Cookie cannot be null");
-        licenses = new TreeMap();
-        categories = new TreeMap();
-        blogs = new TreeMap();
-        languages = new TreeMap();
-        ratings = new TreeMap();
+        licenses = new TreeMap<String, String>();
+        categories = new TreeMap<String, String>();
+        blogs = new TreeMap<String, String>();
+        languages = new TreeMap<String, String>();
+        ratings = new TreeMap<String, String>();
         // TODO: load this somehow?
         ratings.put("None", "");
-        crossuploads = new TreeMap();
+        crossuploads = new TreeMap<String, String>();
         Document document = XmlUtils.loadDocumentFromURL(url, authCookie);
         if (document != null) {
             addToMap(document, CATEGORY_TAG, categories);
@@ -119,7 +119,7 @@ public class MetadataLoader {
         }
     }
 
-    private static void addToMap(Document document, String tag, Map map) {
+    private static void addToMap(Document document, String tag, Map<String, String> map) {
         NodeList nodes = document.getElementsByTagName(tag);
         for (int i = 0; i < nodes.getLength(); i++) {
             NodeList children = nodes.item(i).getChildNodes();

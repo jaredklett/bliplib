@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.15 2007/05/21 17:51:11 jklett Exp $
+ * @version $Id: Uploader.java,v 1.16 2009/02/16 16:48:15 dsk Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.15 $";
+    public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -138,7 +138,8 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(File videoFile, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+    public boolean uploadFile(File videoFile, Properties parameters) 
+    		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         return uploadFile(videoFile, null, parameters);
     }
 
@@ -155,7 +156,8 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) 
+    		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         return uploadFile(videoFile, thumbnailFile, parameters, null);
     }
 
@@ -173,7 +175,8 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List<String> crossposts) 
+    		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         FilePartSource thumbnailFilePartSource = null;
         if (thumbnailFile != null)
             thumbnailFilePartSource = new FilePartSource(thumbnailFile);
@@ -194,7 +197,9 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, List crossposts) throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+    public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, List<String> crossposts) 
+    		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
+    	
         if (urlWithGuid == null)
             throw new IllegalStateException("No GUID has been set");
         PostMethod post = new PostMethod(urlWithGuid);
@@ -273,12 +278,15 @@ Other possible response strings:
         return succeeded;
     } // method uploadFile
 
-    private Part[] setRequestParts(FilePart videoFilePart, FilePart thumbnailFilePart, Properties parameters, List crossposts) {
+    private Part[] setRequestParts(FilePart videoFilePart, FilePart thumbnailFilePart, Properties parameters, List<String> crossposts) {
         Part[] typeArray = new Part[0];
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<Object>();
+        
         list.add(videoFilePart);
-        if (thumbnailFilePart != null)
+        if (thumbnailFilePart != null) {
             list.add(thumbnailFilePart);
+        }
+        
         list.add(Parameters.getStringPart(parameters, Parameters.TITLE_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.POST_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.CAT_PARAM_KEY));
@@ -292,11 +300,12 @@ Other possible response strings:
         list.add(Parameters.getStringPart(parameters, Parameters.RATING_PARAM_KEY));
         if (crossposts != null) {
             for (int i = 0; i < crossposts.size(); i++)
-                list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
+                list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, crossposts.get(i)));
         }
         String ia = parameters.getProperty(Parameters.IA_PARAM_KEY);
-        if (ia != null)
+        if (ia != null) {
             list.add(new StringPart(Parameters.IA_PARAM_KEY, ia));
+        }
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
             // if the caller hasn't populated their parameters with a un/pw

@@ -36,14 +36,14 @@ import java.net.MalformedURLException;
  * and from a variety of objects.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.5 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.6 2009/02/17 16:08:54 dsk Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -161,6 +161,18 @@ public class XmlUtils {
         return builder.parse(file);
     }
 
+    /**
+     * Parses an (XML) File into a DOM document.
+     *
+     * @param is The (presumably XML) file inputstream that's to be turned into a DOM document.
+     * @return a W3C DOM document that holds the contents of the given File
+     * @throws IOException
+     */
+    public static Document makeDocumentFromStream(InputStream is) throws ParserConfigurationException, SAXException, IOException {
+    	DocumentBuilder	builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    	return builder.parse(is);
+    }
+    
     /**
      * Serializes the given W3C DOM document into an XML string.
      *

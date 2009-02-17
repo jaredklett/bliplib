@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.16 2009/02/16 16:48:15 dsk Exp $
+ * @version $Id: Uploader.java,v 1.17 2009/02/17 16:06:37 dsk Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.16 $";
+    public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -237,7 +237,7 @@ public class Uploader {
             // Check the HTTP response code
             succeeded = responseCode < 400;
             // Read the response
-            Document document = XmlUtils.makeDocumentFromString(post.getResponseBodyAsString());
+            Document	document = XmlUtils.makeDocumentFromStream(post.getResponseBodyAsStream());
             if (responseCode == HttpStatus.SC_OK) {
                 if (document != null) {
                     // avoid NPE below

@@ -1,8 +1,8 @@
 /*
  * @(#)MetadataLoader.java
  *
- * Copyright (c) 2006-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.6 2009/01/22 16:42:21 dsk Exp $
+ * @version $Id: MetadataLoader.java,v 1.7 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -57,10 +57,14 @@ public class MetadataLoader {
     private static final String LANGUAGE_TAG = "language";
     private static final String RATING_TAG = "rating";
     private static final String XUPLOADS_TAG = "crossupload";
+    private static final String	CONVERSION_TAG = "conversiontarget";
+    private static final String	PRIVACY_TAG = "hidden";
 
     protected static final String ID_KEY = "id";
     protected static final String NAME_KEY = "name";
 
+    private static final String	NONE_TEXT = "general.none.text";
+    
 // Class variables ////////////////////////////////////////////////////////////
 
     /** A map of content license names to numerical IDs. */
@@ -75,6 +79,9 @@ public class MetadataLoader {
     public static Map<String, String> ratings;
     /** A map of cross-upload destination names to numerical IDs. */
     public static Map<String, String> crossuploads;
+    
+    public static Map<String, String>	conversionTargets;
+    public static Map<String, String>	privacySettings;
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -98,16 +105,21 @@ public class MetadataLoader {
         String metaURI = Parameters.config.getProperty(Parameters.META_URI, Parameters.META_URI_DEF);
         String url = baseURL + metaURI;
         // URL will be checked by XMLUtils, so just check the cookie
-        if (authCookie == null)
+        if (authCookie == null) {
             throw new IllegalArgumentException("Cookie cannot be null");
+        }
+        
         licenses = new TreeMap<String, String>();
         categories = new TreeMap<String, String>();
         blogs = new TreeMap<String, String>();
         languages = new TreeMap<String, String>();
         ratings = new TreeMap<String, String>();
-        // TODO: load this somehow?
-        ratings.put("None", "");
+        
+        ratings.put(I18n.getString(NONE_TEXT), "");
         crossuploads = new TreeMap<String, String>();
+        conversionTargets = new TreeMap<String, String>();
+        privacySettings = new TreeMap<String, String>();
+        
         Document document = XmlUtils.loadDocumentFromURL(url, authCookie);
         if (document != null) {
             addToMap(document, CATEGORY_TAG, categories);
@@ -116,6 +128,8 @@ public class MetadataLoader {
             addToMap(document, LANGUAGE_TAG, languages);
             addToMap(document, RATING_TAG, ratings);
             addToMap(document, XUPLOADS_TAG, crossuploads);
+            addToMap(document, CONVERSION_TAG, conversionTargets);
+            addToMap(document, PRIVACY_TAG, privacySettings);
         }
     }
 
@@ -129,10 +143,12 @@ public class MetadataLoader {
                 Node node = children.item(x);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     String content = node.getFirstChild().getNodeValue();
-                    if (children.item(x).getNodeName().equals(ID_KEY))
+                    if (children.item(x).getNodeName().equals(ID_KEY)) {
                         id = content;
-                    else if (children.item(x).getNodeName().equals(NAME_KEY))
+                    }
+                    else if (children.item(x).getNodeName().equals(NAME_KEY)) {
                         name = content;
+                    }
                 }
             }
             map.put(name, id);

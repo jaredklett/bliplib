@@ -31,10 +31,12 @@ import java.security.*;
  * It is included for compatibility with Java 1.4, which does not include
  * <code>java.util.UUID</code>.
  *
- * @version $Id: RandomGUID.java,v 1.2 2007/03/28 21:27:50 jklett Exp $
+ * @version $Id: RandomGUID.java,v 1.3 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class RandomGUID {
+	
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 	public String valueBeforeMD5 = "";
 	public String valueAfterMD5 = "";

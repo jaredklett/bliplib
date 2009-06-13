@@ -1,8 +1,8 @@
 /*
  * @(#)Uploader.java
  *
- * Copyright (c) 2006-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * A stateful class to handle uploads to Blip.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.17 2009/02/17 16:06:37 dsk Exp $
+ * @version $Id: Uploader.java,v 1.18 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.17 $";
+    public static final String CVS_REV = "$Revision: 1.18 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -158,7 +158,7 @@ public class Uploader {
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) 
     		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
-        return uploadFile(videoFile, thumbnailFile, parameters, null);
+        return uploadFile(videoFile, thumbnailFile, parameters, null, null);
     }
 
     /**
@@ -175,12 +175,12 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List<String> crossposts) 
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List<String> crossposts, List<String> conversions) 
     		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
         FilePartSource thumbnailFilePartSource = null;
         if (thumbnailFile != null)
             thumbnailFilePartSource = new FilePartSource(thumbnailFile);
-        return uploadFile(new FilePartSource(videoFile), thumbnailFilePartSource, parameters, crossposts);
+        return uploadFile(new FilePartSource(videoFile), thumbnailFilePartSource, parameters, crossposts, conversions);
     }
 
     /**
@@ -197,31 +197,40 @@ public class Uploader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, List<String> crossposts) 
+    public boolean uploadFile(PartSource videoFilePartSource, PartSource thumbnailFilePartSource, Properties parameters, 
+    		List<String> crossposts, List<String> conversions)
     		throws FileNotFoundException, HttpException, IOException, ParserConfigurationException, SAXException {
-    	
-        if (urlWithGuid == null)
+    	    	
+        if (urlWithGuid == null) {
             throw new IllegalStateException("No GUID has been set");
+        }
+        
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart = new FilePart(Parameters.FILE_PARAM_KEY, videoFilePartSource);
         FilePart thumbnailFilePart = null;
-        if (thumbnailFilePartSource != null)
+        
+        if (thumbnailFilePartSource != null) {
             thumbnailFilePart = new FilePart(Parameters.THUMB_PARAM_KEY, thumbnailFilePartSource);
-        Part[] parts = setRequestParts(videoFilePart, thumbnailFilePart, parameters, crossposts);
+        }
+        
+        Part[] parts = setRequestParts(videoFilePart, thumbnailFilePart, parameters, crossposts, conversions);
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+        
         boolean succeeded = false;
         try {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            if (userAgent != null)
+            if (userAgent != null) {
                 client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent);
+            }
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
             // If we had an auth cookie previously, set it in the client before
             // we send the request
-            if (authCookie != null)
+            if (authCookie != null) {
                 client.getState().addCookie(authCookie);
+            }
             // Send the post request
             int responseCode = client.executeMethod(post);
             // Check for an authorization cookie in the response
@@ -278,9 +287,10 @@ Other possible response strings:
         return succeeded;
     } // method uploadFile
 
-    private Part[] setRequestParts(FilePart videoFilePart, FilePart thumbnailFilePart, Properties parameters, List<String> crossposts) {
-        Part[] typeArray = new Part[0];
-        List<Object> list = new ArrayList<Object>();
+    private Part[] setRequestParts(FilePart videoFilePart, FilePart thumbnailFilePart, Properties parameters, List<String> crossposts, 
+    		List<String> conversions) {
+        Part[]			typeArray = new Part[0];
+        List<Object>	list = new ArrayList<Object>();
         
         list.add(videoFilePart);
         if (thumbnailFilePart != null) {
@@ -298,14 +308,40 @@ Other possible response strings:
         list.add(Parameters.getStringPart(parameters, Parameters.EXPLICIT_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.LANGUAGE_PARAM_KEY));
         list.add(Parameters.getStringPart(parameters, Parameters.RATING_PARAM_KEY));
+        
         if (crossposts != null) {
-            for (int i = 0; i < crossposts.size(); i++)
+            for (int i = 0; i < crossposts.size(); i++) {
                 list.add(new StringPart(Parameters.CROSSPOST_PARAM_KEY, crossposts.get(i)));
+            }
         }
+        
         String ia = parameters.getProperty(Parameters.IA_PARAM_KEY);
         if (ia != null) {
             list.add(new StringPart(Parameters.IA_PARAM_KEY, ia));
         }
+        
+        if (conversions != null) {
+        	for (int i = 0; i < conversions.size(); i++) {
+        		list.add(new StringPart(Parameters.CONVERSION_PARAM_KEY, conversions.get(i)));
+        	}
+        }
+        
+        if (parameters.containsKey(Parameters.PRIVATE_PARAM_KEY)) {
+        	list.add(Parameters.getStringPart(parameters, Parameters.PRIVATE_PARAM_KEY));
+        }
+        if (parameters.containsKey(Parameters.VISIBLE_PARAM_KEY)) {
+        	list.add(Parameters.getStringPart(parameters, Parameters.VISIBLE_PARAM_KEY));
+        }
+        if (parameters.containsKey(Parameters.PASSWORD_PARAM_KEY)) {
+        	list.add(Parameters.getStringPart(parameters, Parameters.PASSWORD_PARAM_KEY));
+        }
+        if (parameters.containsKey(Parameters.DATE_PARAM_KEY)) {
+        	list.add(Parameters.getStringPart(parameters, Parameters.DATE_PARAM_KEY));
+        }
+        if (parameters.containsKey(Parameters.DATEFIELD_PARAM_KEY)) {
+        	list.add(Parameters.getStringPart(parameters, Parameters.DATEFIELD_PARAM_KEY));
+        }
+        
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
             // if the caller hasn't populated their parameters with a un/pw
@@ -313,6 +349,7 @@ Other possible response strings:
             list.add(Parameters.getStringPart(parameters, Parameters.USER_PARAM_KEY));
             list.add(Parameters.getStringPart(parameters, Parameters.PASS_PARAM_KEY));
         }
+        
         return (Part[])list.toArray(typeArray);
     }
 
@@ -369,7 +406,7 @@ Other possible response strings:
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-
+    
 // Main method ////////////////////////////////////////////////////////////////
 
     /**

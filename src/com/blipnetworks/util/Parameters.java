@@ -1,8 +1,8 @@
 /*
  * @(#)Parameters.java
  *
- * Copyright (c) 2006-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -25,14 +25,14 @@ import java.io.InputStream;
  * outside this one.
  *
  * @author Jared Klett
- * @version $Id: Parameters.java,v 1.13 2009/01/22 16:42:21 dsk Exp $
+ * @version $Id: Parameters.java,v 1.14 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class Parameters {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.13 $";
+    public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -68,12 +68,20 @@ public class Parameters {
     public static final String CROSSPOST_PARAM_KEY = "crosspost";
     /** The hash key to the IA cross-upload parameter. */
     public static final String IA_PARAM_KEY = "crossupload_archiveorg";
+    public static final String CONVERSION_PARAM_KEY = "conversions";
+    public static final String MP3AUDIO_PARAM_KEY = "mp3";
+    public static final String MPEG4VIDEO_PARAM_KEY = "m4v";
     /** The hash key to the explicit flag parameter. */
     public static final String RATING_PARAM_KEY = "content_rating";
     /** The hash key to the explicit flag parameter. */
     public static final String LANGUAGE_PARAM_KEY = "language_code";
     /** The hash key to the explicit flag parameter. */
     public static final String EXPLICIT_PARAM_KEY = "nsfw";
+    public static final String PRIVATE_PARAM_KEY = "hidden";
+    public static final String VISIBLE_PARAM_KEY = "hidden_visible_password";
+    public static final String DATE_PARAM_KEY = "enable_next_hidden_state";
+    public static final String PASSWORD_PARAM_KEY = "hidden_password";
+    public static final String DATEFIELD_PARAM_KEY = "next_hidden_date";
 
     /** Default: the title of the post, if none is supplied. */
     public static final String TITLE_PARAM_DEF = "Working title";
@@ -101,6 +109,11 @@ public class Parameters {
     public static final String LANGUAGE_PARAM_DEF = "en";
     /** Default: the value for the explicit flag. */
     public static final String EXPLICIT_PARAM_DEF = "0";
+    public static final String PRIVATE_PARAM_DEF = "1";
+    public static final String VISIBLE_PARAM_DEF = "1";
+    public static final String DATE_PARAM_DEF = "1";
+    public static final String PASSWORD_PARAM_DEF = "";
+    public static final String DATEFIELD_PARAM_DEF = "";
 
     /** Config key to the base URL of the web site we'll be accessing. */
     public static final String BASE_URL = "base.url";
@@ -143,6 +156,11 @@ public class Parameters {
         defaultMap.put(RATING_PARAM_KEY, RATING_PARAM_DEF);
         defaultMap.put(LANGUAGE_PARAM_KEY, LANGUAGE_PARAM_DEF);
         defaultMap.put(EXPLICIT_PARAM_KEY, EXPLICIT_PARAM_DEF);
+        defaultMap.put(PRIVATE_PARAM_KEY, PRIVATE_PARAM_DEF);
+        defaultMap.put(VISIBLE_PARAM_KEY, VISIBLE_PARAM_DEF);
+        defaultMap.put(DATE_PARAM_KEY, DATE_PARAM_DEF);
+        defaultMap.put(PASSWORD_PARAM_KEY, PASSWORD_PARAM_DEF);
+        defaultMap.put(DATEFIELD_PARAM_KEY, DATEFIELD_PARAM_DEF);
     }
 
     /**

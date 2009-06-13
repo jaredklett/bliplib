@@ -1,8 +1,8 @@
 /*
  * @(#)UploadStatus.java
  *
- * Copyright (c) 2006-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -27,14 +27,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.8 2007/05/18 19:34:16 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.9 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -81,6 +81,7 @@ public class UploadStatus {
         String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
         String statusURI = Parameters.config.getProperty(Parameters.STATUS_URI, Parameters.STATUS_URI_DEF);
         String url = baseURL + statusURI + guid;
+        
         // check the URL and throw a runtime exception if we fail
         try {
             new URL(url);

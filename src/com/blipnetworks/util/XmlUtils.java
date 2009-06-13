@@ -1,8 +1,8 @@
 /*
  * @(#)XmlUtils.java
  *
- * Copyright (c) 2006-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -36,14 +36,14 @@ import java.net.MalformedURLException;
  * and from a variety of objects.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.6 2009/02/17 16:08:54 dsk Exp $
+ * @version $Id: XmlUtils.java,v 1.7 2009/06/13 21:35:48 dsk Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -102,7 +102,8 @@ public class XmlUtils {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public static Document loadDocumentFromURL(String url, Cookie authCookie, String userAgent) throws IOException, ParserConfigurationException, SAXException {
+    public static Document loadDocumentFromURL(String url, Cookie authCookie, String userAgent) 
+    		throws IOException, ParserConfigurationException, SAXException {
         // check the URL and throw a runtime exception if we fail
         try { new URL(url); } catch (MalformedURLException e) { throw new IllegalArgumentException("URL must be valid: " + e.getMessage()); }
         // okay, on with the show...

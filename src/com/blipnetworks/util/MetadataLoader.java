@@ -2,7 +2,7 @@
  * @(#)MetadataLoader.java
  *
  * Copyright (c) 2005-2009 by Blip Networks, Inc.
- * 407 Broome St., 5th Floor
+ * 187 Lafayette St, 6th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.7 2009/06/13 21:35:48 dsk Exp $
+ * @version $Id: MetadataLoader.java,v 1.8 2009/08/18 17:33:16 dsk Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -115,7 +115,7 @@ public class MetadataLoader {
         languages = new TreeMap<String, String>();
         ratings = new TreeMap<String, String>();
         
-        ratings.put(I18n.getString(NONE_TEXT), "");
+        ratings.put(I18n.getString(NONE_TEXT), "0");
         crossuploads = new TreeMap<String, String>();
         conversionTargets = new TreeMap<String, String>();
         privacySettings = new TreeMap<String, String>();
@@ -135,7 +135,13 @@ public class MetadataLoader {
 
     private static void addToMap(Document document, String tag, Map<String, String> map) {
         NodeList nodes = document.getElementsByTagName(tag);
+        
         for (int i = 0; i < nodes.getLength(); i++) {
+        	if (nodes.item(i).getNodeName().equals(tag) && nodes.item(i).getChildNodes().getLength() == 1) {
+        		map.put(tag, "1");
+        		continue;
+        	}
+        	
             NodeList children = nodes.item(i).getChildNodes();
             String id = null;
             String name = null;

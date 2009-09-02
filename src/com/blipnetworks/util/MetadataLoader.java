@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.8 2009/08/18 17:33:16 dsk Exp $
+ * @version $Id: MetadataLoader.java,v 1.9 2009/09/02 14:15:35 dsk Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -100,7 +100,8 @@ public class MetadataLoader {
      * @throws ParserConfigurationException If we can't create an XML parser.
      * @throws SAXException If an error occurs while parsing the XML response.
      */
-    public synchronized static void load(Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
+    public synchronized static void load(Cookie authCookie) throws IOException, ParserConfigurationException, SAXException,
+    		NoDataLoadedFromHostException {
         String baseURL = Parameters.config.getProperty(Parameters.BASE_URL, Parameters.BASE_URL_DEF);
         String metaURI = Parameters.config.getProperty(Parameters.META_URI, Parameters.META_URI_DEF);
         String url = baseURL + metaURI;
@@ -130,6 +131,9 @@ public class MetadataLoader {
             addToMap(document, XUPLOADS_TAG, crossuploads);
             addToMap(document, CONVERSION_TAG, conversionTargets);
             addToMap(document, PRIVACY_TAG, privacySettings);
+        }
+        else {
+        	throw new NoDataLoadedFromHostException("No form data received");
         }
     }
 

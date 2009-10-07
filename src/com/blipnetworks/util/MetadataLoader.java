@@ -40,14 +40,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.9 2009/09/02 14:15:35 dsk Exp $
+ * @version $Id: MetadataLoader.java,v 1.10 2009/10/07 14:33:32 dsk Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -112,11 +112,11 @@ public class MetadataLoader {
         
         licenses = new TreeMap<String, String>();
         categories = new TreeMap<String, String>();
-        blogs = new TreeMap<String, String>();
         languages = new TreeMap<String, String>();
         ratings = new TreeMap<String, String>();
-        
         ratings.put(I18n.getString(NONE_TEXT), "0");
+        
+        blogs = new TreeMap<String, String>();
         crossuploads = new TreeMap<String, String>();
         conversionTargets = new TreeMap<String, String>();
         privacySettings = new TreeMap<String, String>();
@@ -125,15 +125,19 @@ public class MetadataLoader {
         if (document != null) {
             addToMap(document, CATEGORY_TAG, categories);
             addToMap(document, LICENSE_TAG, licenses);
-            addToMap(document, BLOG_TAG, blogs);
             addToMap(document, LANGUAGE_TAG, languages);
             addToMap(document, RATING_TAG, ratings);
+            addToMap(document, BLOG_TAG, blogs);
             addToMap(document, XUPLOADS_TAG, crossuploads);
             addToMap(document, CONVERSION_TAG, conversionTargets);
             addToMap(document, PRIVACY_TAG, privacySettings);
         }
         else {
         	throw new NoDataLoadedFromHostException("No form data received");
+        }
+        
+        if (categories.size() == 0 || licenses.size() == 0 || languages.size() == 0 || ratings.size() == 0) {
+        	throw new NoDataLoadedFromHostException("Partial form data received");
         }
     }
 
